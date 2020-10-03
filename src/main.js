@@ -14,6 +14,8 @@ let g_options = {
   glowIntensity      : 0.3
 };
 
+let g_stats;
+
 let g_canvas;
 let g_ctxt;
 let g_lastFrameTime = -1;
@@ -459,6 +461,8 @@ function render(ctxt) {
 }
 
 function loop(frameTime) {
+  g_stats.begin();
+
   const dt = frameTime - g_lastFrameTime;
   g_lastFrameTime = frameTime;
 
@@ -467,6 +471,8 @@ function loop(frameTime) {
   update(dt);
   render(g_ctxt);
   swap_input_states();
+
+  g_stats.end();
 
   requestAnimationFrame(loop);
 }
@@ -507,8 +513,13 @@ function onKeyUp(event) {
   return false;
 }
 
+
 window.addEventListener('DOMContentLoaded', function(main) {
   g_canvas = document.querySelector('canvas');
+
+  g_stats = new Stats();
+  g_stats.showPanel(0);
+  document.body.appendChild(g_stats.dom);
 
   var gui = new dat.GUI();
 
