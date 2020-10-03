@@ -1,3 +1,5 @@
+// TODO: STATE MACHINE!!!!!!!!
+
 const CANVAS_WIDTH  = 800;
 const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
@@ -48,12 +50,36 @@ let g_game = {
     speed: 0.05,
   },
   splitting_point: null,
+  grabbing_point: null,
+  connecting_point: null,
 };
 
 function isWormClosed(worm) {
-  const first = worm.points[0];
-  const last  = worm.points[worm.points.length-1];
-  return first[0] === last[0] && first[1] === last[1];
+  const head = wormHead(worm);
+  const tail  = wormTail(worm);
+  return head[0] === tail[0] && head[1] === tail[1];
+}
+
+function wormHead(worm) {
+  return worm.points[worm.points.length-1];
+}
+
+function wormTail(worm) {
+  return worm.points[0];
+}
+
+function wormLength(worm) {
+  let length = 0;
+  const path = worm.points
+  for (let i = 1; i < path.length; ++i) {
+    length += dist(path[i - 1], path[i]);
+  }
+  return length;
+}
+
+function mergeWorm(a, b) {
+  a.points.push(...b.points);
+  a.length += b.length;
 }
 
 function init() {
@@ -73,7 +99,9 @@ function init() {
     }
     // Close
     points.push(points[0].slice());
-    g_game.worms.push({points});
+    let worm = {points};
+    worm.length = wormLength(worm);
+    g_game.worms.push(worm);
   }
 
   // Create a straight worm
@@ -83,7 +111,9 @@ function init() {
     for (let i=0; i < segments; ++i) {
       points.push(point(400, 200 + i * 20));
     }
-    g_game.worms.push({points});
+    let worm = {points};
+    worm.length = wormLength(worm);
+    g_game.worms.push(worm);
   }
 }
 
@@ -166,41 +196,127 @@ function update(dt) {
   let closestWorm = null;
   let closestPoint = null;
   let closestPointIndex = 0;
+  let closestHeadDistance = Number.MAX_VALUE;
+  let closestWormToGrab = null;
+  let closestTailDistance = Number.MAX_VALUE;
+  let closestWormToConnect = null;
 
   outer:
   for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
     const worm = g_game.worms[w_i];
 
-    if (!isWormClosed(worm))
-      continue;
+    if (isWormClosed(worm)) {
+      // Find closest point to split
+      for (let p_i=0, p_len=worm.points.length-1; p_i < p_len; ++p_i) {
+        const p0 = worm.points[p_i + 0];
+        const p1 = worm.points[p_i + 1];
+        const proj = vadd(p0, project_clamped(vec(p0, pmouse), vec(p0, p1)));
 
-    for (let p_i=0, p_len=worm.points.length-1; p_i < p_len; ++p_i) {
-      const p0 = worm.points[p_i + 0];
-      const p1 = worm.points[p_i + 1];
-      const proj = vadd(p0, project_clamped(vec(p0, pmouse), vec(p0, p1)));
+        const d = dist(proj, pmouse);
+        if (d < minDistance) {
+          minDistance = d;
+          closestPoint = proj;
+          closestWorm = worm;
+          closestPointIndex = p_i+1;
+        }
+      }
+    } else {
+      // Find closest head to grab
+      {
+        const d = dist(wormHead(worm), pmouse);
+        if (d < closestHeadDistance) {
+          closestHeadDistance = d;
+          closestWormToGrab = worm;
+        }
+      }
 
-      const d = dist(proj, pmouse);
-      if (d < minDistance) {
-        minDistance = d;
-        closestPoint = proj;
-        closestWorm = worm;
-        closestPointIndex = p_i+1;
+      {
+        const d = dist(wormTail(worm), pmouse);
+        if (d < closestTailDistance) {
+          closestTailDistance = d;
+          closestWormToConnect = worm;
+        }
       }
     }
   }
 
+  g_game.grabbing_point = null;
+  g_game.splitting_point = null;
+  g_game.connecting_point = null;
+
   if (g_mouse.wasPressed(0)) {
-    if (minDistance < splitDistanceThreshold) {
+    if (closestHeadDistance < options.connectionDistance) {
+      g_game.grabbing = true;
+      g_game.grabbedWorm = closestWormToGrab;
+    } else if (minDistance < splitDistanceThreshold) {
       rotateArrayLeft(closestWorm.points, closestPointIndex);
       closestWorm.points.unshift(closestPoint);
       closestWorm.points.push(pmouse);
     }
   }
-  else {
-    if (minDistance < splitDistanceThreshold) {
+
+  hack:
+  if (g_game.grabbing) {
+    if (closestTailDistance < options.connectionDistance) {
+      g_game.connecting_point = wormTail(closestWormToConnect);
+
+      if (g_mouse.wasReleased(0)) {
+        if (g_game.grabbedWorm == closestWormToConnect) {
+          // Close the worm instead
+          console.log('closing!');
+          g_game.grabbedWorm.points[0] = wormHead(closestWormToConnect).slice();
+        }
+        else {
+          mergeWorm(g_game.grabbedWorm, closestWormToConnect);
+
+          // Delete the merged path
+          const index = g_game.worms.indexOf(closestWormToConnect);
+          if (index > -1)
+            g_game.worms.splice(index, 1);
+        }
+        break hack;
+      }
+    }
+
+     // Add new head if distance is > threshold
+    const d = dist(wormHead(g_game.grabbedWorm), pmouse);
+    if (d > options.samplingDistance) {
+      g_game.grabbedWorm.points.push(pmouse);
+    }
+
+    // Shorten tail
+    const path = g_game.grabbedWorm.points;
+    const maxLength = g_game.grabbedWorm.length;
+    let length = 0;
+    for (let i = path.length - 1; i > 0; --i) {
+      const segmentLength = dist(path[i - 1], path[i]);
+
+      length += segmentLength;
+
+      if (length > maxLength) {
+        path.splice(0, i - 1);
+
+        // Adjust the tail position
+        const t = (maxLength - (length - segmentLength)) / segmentLength;
+
+        path[0] = point(
+          path[1][0] + (path[0][0] - path[1][0]) * t,
+          path[1][1] + (path[0][1] - path[1][1]) * t
+        );
+
+        break;
+      }
+    }
+  }
+
+  if (g_mouse.isUp(0)) {
+    g_game.grabbing = false;
+
+    if (closestHeadDistance < options.connectionDistance) {
+      g_game.grabbing_point = wormHead(closestWormToGrab);
+    }
+    else if (minDistance < splitDistanceThreshold) {
       g_game.splitting_point = closestPoint.slice();
-    } else {
-      g_game.splitting_point = null;
     }
   }
 
@@ -231,9 +347,10 @@ function render(ctxt) {
     ctxt.lineWidth = 2;
     ctxt.beginPath();
     ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-    for (let p_i=1; p_i < points_len; ++p_i) {
-      const p = worm.points[p_i];
-      ctxt.lineTo(p[0], p[1]);
+    ctxt.curve(worm.points.flat(), options.curveTension, options.curveSegments, false);
+    if (g_game.grabbing && worm === g_game.grabbedWorm) {
+      const pmouse = g_mouse.pos();
+      ctxt.lineTo(pmouse[0], pmouse[1]);
     }
     ctxt.stroke();
 
@@ -265,13 +382,27 @@ function render(ctxt) {
     // ctxt.fill();
   }
 
-  // Draw splitting point
+  // Draw interaction points
+  if (g_game.grabbing_point !== null) {
+    ctxt.strokeStyle = 'lime';
+    ctxt.beginPath();
+    ctxt.arc(g_game.grabbing_point[0], g_game.grabbing_point[1],
+             5, 0, 2*Math.PI);
+    ctxt.stroke();
+  }
   if (g_game.splitting_point !== null) {
-    ctxt.fillStyle = '#fff';
+    ctxt.strokeStyle = '#fff';
     ctxt.beginPath();
     ctxt.arc(g_game.splitting_point[0], g_game.splitting_point[1],
-             8, 0, 2*Math.PI);
-    ctxt.fill();
+             5, 0, 2*Math.PI);
+    ctxt.stroke();
+  }
+  if (g_game.connecting_point != null ) {
+    ctxt.strokeStyle = "orangered";
+    ctxt.beginPath();
+    ctxt.arc(g_game.connecting_point[0], g_game.connecting_point[1],
+             5, 0, 2*Math.PI);
+    ctxt.stroke();
   }
 }
 
@@ -317,8 +448,21 @@ function onMouseUp(event) {
   return false;
 }
 
+let options = {
+  samplingDistance: 10,
+  curveTension: 0.5,
+  curveSegments: 10,
+  connectionDistance: 30,
+};
+
 window.addEventListener('DOMContentLoaded', function(main) {
   g_canvas = document.querySelector('canvas');
+
+  var gui = new dat.GUI();
+  gui.add(options, "samplingDistance", 0, 100);
+  gui.add(options, "curveTension", 0, 2).onChange(() => update());
+  gui.add(options, "curveSegments", 1, 30).onChange(() => update());
+  gui.add(options, "connectionDistance", 0, 100);
 
   g_canvas.addEventListener('mousemove', onMouseMove);
   g_canvas.addEventListener('mousedown', onMouseDown);
@@ -330,9 +474,6 @@ window.addEventListener('DOMContentLoaded', function(main) {
   g_canvas.style.height = (CANVAS_HEIGHT * CANVAS_SCALE) + "px";
 
   g_ctxt = g_canvas.getContext('2d');
-  // Origin in bottom-left corner, Y-axis up
-  // g_ctxt.translate(0, CANVAS_HEIGHT);
-  // g_ctxt.scale(1, -1);
 
   init();
 
