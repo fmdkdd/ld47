@@ -1,0 +1,45 @@
+html {
+  font-size: 20px;
+  color: #eee;
+  background-color: #333;
+}
+
+body {
+  max-width: 1000px;
+  margin: auto;
+  background-color: #444;
+}
+
+canvas {
+  /* image-rendering: optimizeSpeed; */
+  /* image-rendering: -moz-crisp-edges; */
+  /* image-rendering: -webkit-optimize-contrast; */
+  /* image-rendering: -o-crisp-edges; */
+  /* image-rendering: pixelated; */
+  /* -ms-interpolation-mode: nearest-neighbor; */
+  display: block;
+
+  margin: auto;
+  background-color: #000;
+}
+
+#title {
+  text-align: center;
+
+  font-size: 40px;
+  font-family: monospace;
+  text-shadow: 0px 4px 3px rgba(0,0,0,0.4),
+               0px 8px 13px rgba(0,0,0,0.1),
+               0px 18px 23px rgba(0,0,0,0.1);
+}
+
+a {
+  color: #ff8f8f;
+}
+
+footer {
+  font-size: 18px;
+  text-align: right;
+  margin-top: 50px;
+  clear: right;
+}
