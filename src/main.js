@@ -303,12 +303,18 @@ function onMouseDown(event) {
   if (event.button === 0) {
     g_mouse.buttons[0] = BUTTON_STATE_DOWN;
   }
+
+  event.preventDefault();
+  return false;
 }
 
 function onMouseUp(event) {
   if (event.button === 0) {
     g_mouse.buttons[0] = BUTTON_STATE_UP;
   }
+
+  event.preventDefault();
+  return false;
 }
 
 window.addEventListener('DOMContentLoaded', function(main) {
