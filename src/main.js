@@ -1,5 +1,3 @@
-// TODO: STATE MACHINE!!!!!!!!
-
 const CANVAS_WIDTH  = 800;
 const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
@@ -17,6 +15,259 @@ let g_options = {
 let g_canvas;
 let g_ctxt;
 let g_lastFrameTime = -1;
+
+let g_CurrentState = null;
+
+function setState(state) {
+  if (g_CurrentState !== null && g_CurrentState.onExit)
+    g_CurrentState.onExit(state);
+  if (state.onEnter)
+    state.onEnter(g_CurrentState);
+  g_CurrentState = state;
+}
+
+let StateMain = {
+  update(dt) {
+    // Pick point on worm closest to mouse
+    const pmouse = g_mouse.pos();
+    let closestSplitPointDistance = Number.MAX_VALUE;
+    let closestWormToSplit = null;
+    let closestSplittingPoint = null;
+    let closestSplittingPointIndex = 0;
+    let closestHeadDistance = Number.MAX_VALUE;
+    let closestWormToGrab = null;
+
+    for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
+      const worm = g_game.worms[w_i];
+
+      if (isWormClosed(worm)) {
+        // Find closest point to split
+        for (let p_i=0, p_len=worm.points.length-1; p_i < p_len; ++p_i) {
+          const p0 = worm.points[p_i + 0];
+          const p1 = worm.points[p_i + 1];
+          const proj = vadd(p0, project_clamped(vec(p0, pmouse), vec(p0, p1)));
+
+          const d = dist(proj, pmouse);
+          if (d < closestSplitPointDistance) {
+            closestSplitPointDistance = d;
+            closestSplittingPoint = proj;
+            closestWormToSplit = worm;
+            closestSplittingPointIndex = p_i+1;
+          }
+        }
+      } else {
+        // Find closest head to grab
+        {
+          const d = dist(wormHead(worm), pmouse);
+          if (d < closestHeadDistance) {
+            closestHeadDistance = d;
+            closestWormToGrab = worm;
+          }
+        }
+      }
+    }
+
+    this.grabbing_point = null;
+    this.splitting_point = null;
+
+    if (g_mouse.isUp(0)) {
+      if (closestHeadDistance < g_options.grabDistance) {
+        this.grabbing_point = wormHead(closestWormToGrab);
+      }
+      else if (closestSplitPointDistance < g_options.splitDistance) {
+        this.splitting_point = closestSplittingPoint.slice();
+      }
+    } else if (g_mouse.wasPressed(0)) {
+      if (closestHeadDistance < g_options.grabDistance) {
+        StateDraggingWorm.worm = closestWormToGrab;
+        setState(StateDraggingWorm);
+      } else if (closestSplitPointDistance < g_options.splitDistance) {
+        rotateArrayLeft(closestWormToSplit.points, closestSplittingPointIndex);
+        closestWormToSplit.points.unshift(closestSplittingPoint);
+        closestWormToSplit.points.push(pmouse);
+        StateDraggingWorm.worm = closestWormToSplit;
+        setState(StateDraggingWorm);
+      }
+    }
+
+    // Update train
+    {
+      // let train = g_game.train;
+      // train.segment_progress += train.speed;
+      // if (train.segment_progress >= 1) {
+      //   train.segment_index = (train.segment_index + 1) % g_game.segments.length;
+      //   train.segment_progress -= 1;
+      // }
+    }
+  },
+
+  render(ctxt) {
+    // Draw worms
+    for (let w_i=0, len=g_game.worms.length; w_i < len; ++w_i) {
+      const worm = g_game.worms[w_i];
+      const points_len = worm.points.length;
+
+      ctxt.strokeStyle = 'white';
+      ctxt.lineWidth = 2;
+      ctxt.beginPath();
+      ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
+      ctxt.curve(worm.points.flat(), g_options.curveTension, g_options.curveSegments, false);
+      ctxt.stroke();
+
+      // Draw points at segment ends
+      if (g_options.showWormPoints) {
+        ctxt.fillStyle = '#eee';
+        const radius = 3;
+        for (let i=0; i < points_len; ++i) {
+          const seg = worm.points[i];
+          ctxt.beginPath();
+          ctxt.arc(seg[0], seg[1], radius, 0, Math.PI*2);
+          ctxt.fill();
+        }
+      }
+    }
+
+    // Draw train
+    {
+      // const train = g_game.train
+      // ctxt.fillStyle = '#b00';
+      // const p1 = worm.points[train.segment_index];
+      // const p0 = worm.points[(train.segment_index + 1) % seg_len];
+      // const a = train.segment_progress;
+      // const train_x = lerp(p0[0], p1[0], train.segment_progress);
+      // const train_y = lerp(p0[1], p1[1], train.segment_progress);
+      // ctxt.beginPath();
+      // ctxt.arc(train_x, train_y, 6, 0, Math.PI*2);
+      // ctxt.fill();
+    }
+
+    // Draw interaction points
+    if (this.grabbing_point !== null) {
+      ctxt.strokeStyle = 'lime';
+      ctxt.beginPath();
+      ctxt.arc(this.grabbing_point[0], this.grabbing_point[1],
+               5, 0, 2*Math.PI);
+      ctxt.stroke();
+    }
+    if (this.splitting_point !== null) {
+      ctxt.strokeStyle = '#fff';
+      ctxt.beginPath();
+      ctxt.arc(this.splitting_point[0], this.splitting_point[1],
+               5, 0, 2*Math.PI);
+      ctxt.stroke();
+    }
+  },
+
+  onExit() {
+    this.grabbing_point = null;
+    this.splitting_point = null;
+  },
+};
+
+let StateDraggingWorm = {
+  worm: null,
+  connecting_point: null,
+
+  update(dt) {
+    let pmouse = g_mouse.pos();
+    let closestTailDistance = Number.MAX_VALUE;
+    let closestWormToConnect = null;
+
+    for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
+      const worm = g_game.worms[w_i];
+
+      if (!isWormClosed(worm)) {
+        // Find closest tail to connect
+        const d = dist(wormTail(worm), pmouse);
+        if (d < closestTailDistance) {
+          closestTailDistance = d;
+          closestWormToConnect = worm;
+        }
+      }
+    }
+
+    if (g_mouse.isDown(0)) {
+      if (closestTailDistance < g_options.connectionDistance) {
+        this.connecting_point = wormTail(closestWormToConnect);
+      }
+      else {
+        this.connecting_point = null;
+      }
+
+      // Add new head if distance is > threshold
+      const d = dist(wormHead(this.worm), pmouse);
+      if (d > g_options.samplingDistance) {
+        this.worm.points.push(pmouse);
+      }
+
+      // Shorten tail
+      const path = this.worm.points;
+      const maxLength = this.worm.length;
+      let length = dist(pmouse, wormHead(this.worm)); // Add the distance to the cursor
+      for (let i = path.length - 1; i > 0; --i) {
+        const segmentLength = dist(path[i - 1], path[i]);
+
+        length += segmentLength;
+
+        if (length > maxLength) {
+          path.splice(0, i - 1);
+
+          // Adjust the tail position
+          const t = (maxLength - (length - segmentLength)) / segmentLength;
+
+          path[0] = point(
+            path[1][0] + (path[0][0] - path[1][0]) * t,
+            path[1][1] + (path[0][1] - path[1][1]) * t
+          );
+
+          break;
+        }
+      }
+    }
+    else if (g_mouse.wasReleased(0)) {
+      if (this.worm == closestWormToConnect) {
+        // Trying to connect to one's own tail, close the worm instead
+        this.worm.points[0] = wormHead(this.worm).slice();
+      }
+      else {
+        mergeWorm(this.worm, closestWormToConnect);
+
+        // Delete the merged path
+        const index = g_game.worms.indexOf(closestWormToConnect);
+        if (index > -1)
+          g_game.worms.splice(index, 1);
+      }
+      setState(StateMain);
+    }
+  },
+
+  render(ctxt) {
+    StateMain.render(ctxt);
+
+    // Connect head to mouse cursor
+    const head = wormHead(this.worm);
+    const pmouse = g_mouse.pos();
+
+    ctxt.strokeStyle = 'white';
+    ctxt.lineWidth = 2;
+    ctxt.beginPath();
+    ctxt.moveTo(head[0], head[1]);
+    ctxt.lineTo(pmouse[0], pmouse[1]);
+    ctxt.stroke();
+
+    if (this.connecting_point != null ) {
+      ctxt.strokeStyle = "orangered";
+      ctxt.beginPath();
+      ctxt.arc(this.connecting_point[0], this.connecting_point[1],
+               5, 0, 2*Math.PI);
+      ctxt.stroke();
+    }
+  },
+
+  onExit() {
+    this.connecting_point = null;
+  },
+};
 
 const BUTTON_STATE_UP   = false;
 const BUTTON_STATE_DOWN = true;
@@ -59,9 +310,6 @@ let g_game = {
     segment_progress: 0,
     speed: 0.05,
   },
-  splitting_point: null,
-  grabbing_point: null,
-  connecting_point: null,
 };
 
 function isWormClosed(worm) {
@@ -93,7 +341,6 @@ function mergeWorm(a, b) {
 }
 
 function init() {
-
   // Create a round worm
   {
     const center_x = 300;
@@ -125,6 +372,8 @@ function init() {
     worm.length = wormLength(worm);
     g_game.worms.push(worm);
   }
+
+  setState(StateMain);
 }
 
 function point(x, y) {
@@ -199,148 +448,7 @@ function rotateArrayLeft(a, n) {
 }
 
 function update(dt) {
-  // Pick point on worm closest to mouse
-  const pmouse = g_mouse.pos();
-  let minDistance = Number.MAX_VALUE;
-  let closestWorm = null;
-  let closestPoint = null;
-  let closestPointIndex = 0;
-  let closestHeadDistance = Number.MAX_VALUE;
-  let closestWormToGrab = null;
-  let closestTailDistance = Number.MAX_VALUE;
-  let closestWormToConnect = null;
-
-  outer:
-  for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
-    const worm = g_game.worms[w_i];
-
-    if (isWormClosed(worm)) {
-      // Find closest point to split
-      for (let p_i=0, p_len=worm.points.length-1; p_i < p_len; ++p_i) {
-        const p0 = worm.points[p_i + 0];
-        const p1 = worm.points[p_i + 1];
-        const proj = vadd(p0, project_clamped(vec(p0, pmouse), vec(p0, p1)));
-
-        const d = dist(proj, pmouse);
-        if (d < minDistance) {
-          minDistance = d;
-          closestPoint = proj;
-          closestWorm = worm;
-          closestPointIndex = p_i+1;
-        }
-      }
-    } else {
-      // Find closest head to grab
-      {
-        const d = dist(wormHead(worm), pmouse);
-        if (d < closestHeadDistance) {
-          closestHeadDistance = d;
-          closestWormToGrab = worm;
-        }
-      }
-
-      {
-        const d = dist(wormTail(worm), pmouse);
-        if (d < closestTailDistance) {
-          closestTailDistance = d;
-          closestWormToConnect = worm;
-        }
-      }
-    }
-  }
-
-  g_game.grabbing_point = null;
-  g_game.splitting_point = null;
-  g_game.connecting_point = null;
-
-  if (g_mouse.wasPressed(0)) {
-    if (closestHeadDistance < g_options.grabDistance) {
-      g_game.grabbing = true;
-      g_game.grabbedWorm = closestWormToGrab;
-    } else if (minDistance < g_options.splitDistance) {
-      rotateArrayLeft(closestWorm.points, closestPointIndex);
-      closestWorm.points.unshift(closestPoint);
-      closestWorm.points.push(pmouse);
-    }
-  }
-
-  hack:
-  if (g_game.grabbing) {
-    if (closestTailDistance < g_options.connectionDistance) {
-      g_game.connecting_point = wormTail(closestWormToConnect);
-
-      if (g_mouse.wasReleased(0)) {
-        if (g_game.grabbedWorm == closestWormToConnect) {
-          // Close the worm instead
-          console.log('closing!');
-          g_game.grabbedWorm.points[0] = wormHead(closestWormToConnect).slice();
-        }
-        else {
-          mergeWorm(g_game.grabbedWorm, closestWormToConnect);
-
-          // Delete the merged path
-          const index = g_game.worms.indexOf(closestWormToConnect);
-          if (index > -1)
-            g_game.worms.splice(index, 1);
-        }
-        break hack;
-      }
-    }
-
-     // Add new head if distance is > threshold
-    const d = dist(wormHead(g_game.grabbedWorm), pmouse);
-    if (d > g_options.samplingDistance) {
-      g_game.grabbedWorm.points.push(pmouse);
-    }
-
-    // Shorten tail
-
-    const path = g_game.grabbedWorm.points;
-    const maxLength = g_game.grabbedWorm.length;
-
-    let length = dist(pmouse, wormHead(g_game.grabbedWorm)); // Add the distance to the cursor
-
-    for (let i = path.length - 1; i > 0; --i) {
-      const segmentLength = dist(path[i - 1], path[i]);
-
-      length += segmentLength;
-
-      if (length > maxLength) {
-        path.splice(0, i - 1);
-
-        // Adjust the tail position
-        const t = (maxLength - (length - segmentLength)) / segmentLength;
-
-        path[0] = point(
-          path[1][0] + (path[0][0] - path[1][0]) * t,
-          path[1][1] + (path[0][1] - path[1][1]) * t
-        );
-
-        break;
-      }
-    }
-  }
-
-  if (g_mouse.isUp(0)) {
-    g_game.grabbing = false;
-
-    if (closestHeadDistance < g_options.grabDistance) {
-      g_game.grabbing_point = wormHead(closestWormToGrab);
-    }
-    else if (minDistance < g_options.splitDistance) {
-      g_game.splitting_point = closestPoint.slice();
-    }
-  }
-
-  // Update train
-  {
-    // let train = g_game.train;
-    // train.segment_progress += train.speed;
-    // if (train.segment_progress >= 1) {
-    //   train.segment_index = (train.segment_index + 1) % g_game.segments.length;
-    //   train.segment_progress -= 1;
-    // }
-  }
+  g_CurrentState.update(dt);
 }
 
 function lerp(a, b, dt) {
@@ -348,73 +456,9 @@ function lerp(a, b, dt) {
 }
 
 function render(ctxt) {
-  //ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  // Draw worms
-  for (let w_i=0, len=g_game.worms.length; w_i < len; ++w_i) {
-    const worm = g_game.worms[w_i];
-    const points_len = worm.points.length;
-
-    ctxt.strokeStyle = 'white';
-    ctxt.lineWidth = 2;
-    ctxt.beginPath();
-    ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-    ctxt.curve(worm.points.flat(), g_options.curveTension, g_options.curveSegments, false);
-    if (g_game.grabbing && worm === g_game.grabbedWorm) {
-      const pmouse = g_mouse.pos();
-      ctxt.lineTo(pmouse[0], pmouse[1]);
-    }
-    ctxt.stroke();
-
-    // Draw points at segment ends
-    if (g_options.showWormPoints) {
-      ctxt.fillStyle = '#eee';
-      const radius = 3;
-      for (let i=0; i < points_len; ++i) {
-        const seg = worm.points[i];
-        ctxt.beginPath();
-        ctxt.arc(seg[0], seg[1], radius, 0, Math.PI*2);
-        ctxt.fill();
-      }
-    }
-  }
-
-  // Draw train
-  {
-    // const train = g_game.train
-    // ctxt.fillStyle = '#b00';
-    // const p1 = worm.points[train.segment_index];
-    // const p0 = worm.points[(train.segment_index + 1) % seg_len];
-    // const a = train.segment_progress;
-    // const train_x = lerp(p0[0], p1[0], train.segment_progress);
-    // const train_y = lerp(p0[1], p1[1], train.segment_progress);
-    // ctxt.beginPath();
-    // ctxt.arc(train_x, train_y, 6, 0, Math.PI*2);
-    // ctxt.fill();
-  }
-
-  // Draw interaction points
-  if (g_game.grabbing_point !== null) {
-    ctxt.strokeStyle = 'lime';
-    ctxt.beginPath();
-    ctxt.arc(g_game.grabbing_point[0], g_game.grabbing_point[1],
-             5, 0, 2*Math.PI);
-    ctxt.stroke();
-  }
-  if (g_game.splitting_point !== null) {
-    ctxt.strokeStyle = '#fff';
-    ctxt.beginPath();
-    ctxt.arc(g_game.splitting_point[0], g_game.splitting_point[1],
-             5, 0, 2*Math.PI);
-    ctxt.stroke();
-  }
-  if (g_game.connecting_point != null ) {
-    ctxt.strokeStyle = "orangered";
-    ctxt.beginPath();
-    ctxt.arc(g_game.connecting_point[0], g_game.connecting_point[1],
-             5, 0, 2*Math.PI);
-    ctxt.stroke();
-  }
+  g_CurrentState.render(ctxt);
 }
 
 function loop(frameTime) {
