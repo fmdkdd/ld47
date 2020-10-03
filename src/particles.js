@@ -1,20 +1,20 @@
 class ParticleSystem
 {
-  constructor(particles, {lifetime = 10, drag = 1, fromScale = 1, toScale = 1})
+  constructor(particles)
   {
     this.particles = particles;
+  }
 
-    this.lifetime = lifetime;
-    this.drag = drag;
-    this.fromScale = fromScale;
-    this.toScale = toScale;
+  empty()
+  {
+    return this.particles.length === 0;
   }
 
   update(dt)
   {
     // Delete outdated particles
 
-    this.particles = this.particles.filter(p => p.age < this.lifetime);
+    this.particles = this.particles.filter(p => p.age < p.lifetime);
 
     // Update
 
@@ -24,41 +24,60 @@ class ParticleSystem
     {
       p.age += dt;
 
+      const lifeRatio = p.age / p.lifetime;
+
       p.pos[0] += p.vel[0] * dts;
       p.pos[1] += p.vel[1] * dts;
 
-      p.vel[0] *= this.drag;
-      p.vel[1] *= this.drag;
+      p.vel[0] *= p.drag;
+      p.vel[1] *= p.drag;
 
-      p.scale = 1; // TODO
+      p.scale = lerp(p.fromScale, p.toScale, lifeRatio);
     });
   }
 
   draw(ctx)
   {
-    //ctx.globalCompositeOperation = 'lighter';
-    //ctx.filter = 'blur(1px)';
-    //ctx.strokeStyle = '#29dcfd';
-
     this.particles.forEach(p =>
     {
-      //console.log(p.pos);
-      ctx.fillStyle = 'red';
-      ctx.beginPath();
-      ctx.arc(p.pos[0], p.pos[1], 3, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      //ctx.filter = 'blur(3px)';
+      ctx.fillStyle = '#ff3bfe';
+      ctx.fillRect(p.pos[0], p.pos[1], 6 * p.scale, 6 * p.scale);
+      //ctx.beginPath();
+      //ctx.arc(p.pos[0], p.pos[1], 6 * p.scale, 0, Math.PI * 2);
+      //ctx.fill();
+//return;
+      ctx.globalCompositeOperation = 'source-over';
+      //ctx.filter = 'none';
+      ctx.fillStyle = '#ffdeff';
+      ctx.fillRect(p.pos[0], p.pos[1], 3 * p.scale, 6 * p.scale);
+      //ctx.beginPath();
+      //ctx.arc(p.pos[0], p.pos[1], 3 * p.scale, 0, Math.PI * 2);
+      //ctx.fill();
     });
   }
 }
 
 class Particle
 {
-  constructor(pos, vel)
+  constructor(pos, vel, {lifetime = 10, drag = 1, fromScale = 1, toScale = 1})
   {
-    this.age = 0;
     this.pos = pos;
     this.vel = vel;
+    this.lifetime = lifetime;
+    this.drag = drag;
+    this.fromScale = fromScale;
+    this.toScale = toScale;
+
+    this.age = 0;
+    this.scale = 1;
   }
+}
+
+function lerp(a, b, t)
+{
+  return a + (b - a) * t;
 }
 
 function makeExplosion(pos, particleCount)
@@ -67,16 +86,17 @@ function makeExplosion(pos, particleCount)
 
   for (let i = 0; i < particleCount; ++i)
   {
-    particles.push(new Particle(pos.slice(), vmult(randomDir(), 10), {}));
+    particles.push(new Particle(
+      pos.slice(),
+      vmult(randomDir(), 20),
+      {
+        lifetime: 5000,
+        drag: 0.99,
+        fromScale: 3,
+        toScale: 1
+      }
+    ));
   }
 
-  return new ParticleSystem(
-    particles,
-    {
-      lifetime: 5000,
-      drag: 0.99,
-      fromScale: 1,
-      toScale: 3
-    }
-  );
+  return new ParticleSystem(particles);
 }

@@ -104,10 +104,12 @@ let StateMain = {
       // }
     }
 
-    g_game.particleSystems.forEach(system => system.update(dt));
+    updateParticles(dt);
   },
 
   render(ctxt) {
+    //drawGrid(ctxt);
+
     // Draw worms
     for (let w_i=0, len=g_game.worms.length; w_i < len; ++w_i) {
       const worm = g_game.worms[w_i];
@@ -272,6 +274,8 @@ let StateDraggingWorm = {
 
       setState(StateMain);
     }
+
+    updateParticles(dt);
   },
 
   render(ctxt) {
@@ -301,6 +305,27 @@ let StateDraggingWorm = {
     this.connecting_point = null;
   },
 };
+
+function updateParticles(dt)
+{
+    g_game.particleSystems.forEach(system => system.update(dt));
+    g_game.particleSystems = g_game.particleSystems.filter(system => !system.empty());
+}
+
+function drawGrid(ctx)
+{
+  for (let y = 50; y < g_canvas.height; ++y)
+  {
+    ctx.moveTo(0, y);
+    ctx.lineTo(g_canvas.width, y);
+  }
+
+  for (let x = 50; x < g_canvas.width; ++x)
+  {
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, g_canvas.height);
+  }
+}
 
 const BUTTON_STATE_UP   = false;
 const BUTTON_STATE_DOWN = true;
@@ -507,7 +532,7 @@ function onMouseUp(event) {
 }
 
 function onKeyUp(event) {
-  g_game.particleSystems.push(makeExplosion([200, 200], 30));
+  g_game.particleSystems.push(makeExplosion([200, 200], 10));
 
   event.preventDefault();
   return false;
