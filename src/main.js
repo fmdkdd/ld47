@@ -2,6 +2,12 @@ const CANVAS_WIDTH  = 800;
 const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
 
+let g_game = {
+  worms: [],
+  trains: [],
+  particleSystems: [],
+};
+
 let g_options = {
   samplingDistance   : 10,
   curveTension       : 0.5,
@@ -11,7 +17,8 @@ let g_options = {
   splitDistance      : 10,
   showWormPoints     : false,
   glowSpeed          : 0.002,
-  glowIntensity      : 0.3
+  glowIntensity      : 0.3,
+  trainSpeed         : 0.01,
 };
 
 let g_stats;
@@ -71,37 +78,42 @@ let StateMain = {
       }
     }
 
-    this.grabbing_point = null;
-    this.splitting_point = null;
+    this.grabbingPoint = null;
+    this.splittingPoint = null;
 
     if (g_mouse.isUp(0)) {
       if (closestHeadDistance < g_options.grabDistance) {
-        this.grabbing_point = wormHead(closestWormToGrab);
+        this.grabbingPoint = wormHead(closestWormToGrab);
       }
       else if (closestSplitPointDistance < g_options.splitDistance) {
-        this.splitting_point = closestSplittingPoint.slice();
+        this.splittingPoint = closestSplittingPoint.slice();
       }
     } else if (g_mouse.wasPressed(0)) {
       if (closestHeadDistance < g_options.grabDistance) {
         StateDraggingWorm.worm = closestWormToGrab;
         setState(StateDraggingWorm);
       } else if (closestSplitPointDistance < g_options.splitDistance) {
-        rotateArrayLeft(closestWormToSplit.points, closestSplittingPointIndex);
-        closestWormToSplit.points.unshift(closestSplittingPoint);
-        closestWormToSplit.points.push(pmouse);
+        // Save train screen positions to adjust it later
+        let savedTrainsScreenPos = [];
+        for (let train of getTrainsOnWorm(closestWormToSplit)) {
+          savedTrainsScreenPos.push(getTrainScreenPos(train));
+        }
+
+        const path = closestWormToSplit.points;
+        // Pop redundant head
+        path.pop();
+        // Rotate so that empty segment is on point to split
+        rotateArrayLeft(path, closestSplittingPointIndex);
+        // New tail, nead head to create opening
+        path.unshift(closestSplittingPoint);
+        path.push(pmouse);
+
+        // Adjust trains positions
+        adjustTrainPositions(closestWormToSplit, savedTrainsScreenPos);
+
         StateDraggingWorm.worm = closestWormToSplit;
         setState(StateDraggingWorm);
       }
-    }
-
-    // Update train
-    {
-      // let train = g_game.train;
-      // train.segment_progress += train.speed;
-      // if (train.segment_progress >= 1) {
-      //   train.segment_index = (train.segment_index + 1) % g_game.segments.length;
-      //   train.segment_progress -= 1;
-      // }
     }
 
     updateParticles(dt);
@@ -153,52 +165,80 @@ let StateMain = {
           ctxt.beginPath();
           ctxt.arc(seg[0], seg[1], radius, 0, Math.PI*2);
           ctxt.fill();
+          ctxt.fillText(i, seg[0]+3, seg[1]+3);
         }
       }
 
       g_game.particleSystems.forEach(system => system.draw(ctxt));
     }
 
-    // Draw train
-    {
-      // const train = g_game.train
-      // ctxt.fillStyle = '#b00';
-      // const p1 = worm.points[train.segment_index];
-      // const p0 = worm.points[(train.segment_index + 1) % seg_len];
-      // const a = train.segment_progress;
-      // const train_x = lerp(p0[0], p1[0], train.segment_progress);
-      // const train_y = lerp(p0[1], p1[1], train.segment_progress);
-      // ctxt.beginPath();
-      // ctxt.arc(train_x, train_y, 6, 0, Math.PI*2);
-      // ctxt.fill();
-    }
-
     // Draw interaction points
-    if (this.grabbing_point !== null) {
+    if (this.grabbingPoint !== null) {
       ctxt.strokeStyle = 'lime';
       ctxt.beginPath();
-      ctxt.arc(this.grabbing_point[0], this.grabbing_point[1],
+      ctxt.arc(this.grabbingPoint[0], this.grabbingPoint[1],
                5, 0, 2*Math.PI);
       ctxt.stroke();
     }
-    if (this.splitting_point !== null) {
+    if (this.splittingPoint !== null) {
       ctxt.strokeStyle = '#fff';
       ctxt.beginPath();
-      ctxt.arc(this.splitting_point[0], this.splitting_point[1],
+      ctxt.arc(this.splittingPoint[0], this.splittingPoint[1],
                5, 0, 2*Math.PI);
       ctxt.stroke();
     }
   },
 
   onExit() {
-    this.grabbing_point = null;
-    this.splitting_point = null;
+    this.grabbingPoint = null;
+    this.splittingPoint = null;
   },
 };
 
+function getTrainScreenPos(train) {
+  const path = g_game.worms[train.wormIndex].points;
+  const a = path[Math.trunc(train.pos) + 1];
+  const b = path[Math.trunc(train.pos) + 0];
+  const frac = train.pos - Math.trunc(train.pos);
+  const x = lerp(a[0], b[0], frac);
+  const y = lerp(a[1], b[1], frac);
+  return point(x, y);
+}
+
+function adjustTrainPositions(worm, savedTrainsScreenPos) {
+  const trains = getTrainsOnWorm(worm);
+  const path = worm.points;
+  for (let t_i=0, l=savedTrainsScreenPos.length; t_i < l; ++t_i) {
+    let closestPoint = null;
+    let closestSegmentIndex = 0;
+    let minDistance = Number.MAX_VALUE;
+    const trainScreenPos = savedTrainsScreenPos[t_i];
+
+    // Projected train pos onto new path, keep closest
+    for (let p_i=0, p_len=path.length-1; p_i < p_len; ++p_i) {
+      const p0 = path[p_i + 0];
+      const p1 = path[p_i + 1];
+      const proj = vadd(p0, project_clamped(vec(p0, trainScreenPos), vec(p0, p1)));
+      const d = dist(proj, trainScreenPos);
+      if (d < minDistance) {
+        minDistance = d;
+        closestPoint = proj;
+        closestSegmentIndex = p_i;
+      }
+    }
+
+    // Convert closest point back to train pos
+    const p0 = path[closestSegmentIndex + 0];
+    const p1 = path[closestSegmentIndex + 1];
+    const frac = vlength(vec(p0, closestPoint)) / vlength(vec(p0, p1));
+    trains[t_i].pos = closestSegmentIndex + frac;
+  }
+
+}
+
 let StateDraggingWorm = {
   worm: null,
-  connecting_point: null,
+  connectingPoint: null,
 
   update(dt) {
     let pmouse = g_mouse.pos();
@@ -220,10 +260,10 @@ let StateDraggingWorm = {
 
     if (g_mouse.isDown(0)) {
       if (closestTailDistance < g_options.connectionDistance) {
-        this.connecting_point = wormTail(closestWormToConnect);
+        this.connectingPoint = wormTail(closestWormToConnect);
       }
       else {
-        this.connecting_point = null;
+        this.connectingPoint = null;
       }
 
       // Add new head if distance is > threshold
@@ -242,6 +282,12 @@ let StateDraggingWorm = {
         length += segmentLength;
 
         if (length > maxLength) {
+          // Save train screen positions to adjust it later
+          let savedTrainsScreenPos = [];
+          for (let train of getTrainsOnWorm(this.worm)) {
+            savedTrainsScreenPos.push(getTrainScreenPos(train));
+          }
+
           path.splice(0, i - 1);
 
           // Adjust the tail position
@@ -252,6 +298,8 @@ let StateDraggingWorm = {
             path[1][1] + (path[0][1] - path[1][1]) * t
           );
 
+          // Adjust trains positions
+          adjustTrainPositions(this.worm, savedTrainsScreenPos);
           break;
         }
       }
@@ -292,17 +340,17 @@ let StateDraggingWorm = {
     ctxt.lineTo(pmouse[0], pmouse[1]);
     ctxt.stroke();
 
-    if (this.connecting_point != null ) {
+    if (this.connectingPoint != null ) {
       ctxt.strokeStyle = "orangered";
       ctxt.beginPath();
-      ctxt.arc(this.connecting_point[0], this.connecting_point[1],
+      ctxt.arc(this.connectingPoint[0], this.connectingPoint[1],
                5, 0, 2*Math.PI);
       ctxt.stroke();
     }
   },
 
   onExit() {
-    this.connecting_point = null;
+    this.connectingPoint = null;
   },
 };
 
@@ -361,16 +409,6 @@ let g_mouse = {
   }
 };
 
-let g_game = {
-  worms: [],
-  train: {
-    segment_index: 0,
-    segment_progress: 0,
-    speed: 0.05,
-  },
-  particleSystems: []
-};
-
 function isWormClosed(worm) {
   const head = wormHead(worm);
   const tail  = wormTail(worm);
@@ -397,6 +435,16 @@ function wormLength(worm) {
 function mergeWorm(a, b) {
   a.points.push(...b.points);
   a.length += b.length;
+}
+
+function getTrainsOnWorm(worm) {
+  const idx = g_game.worms.indexOf(worm);
+  const trains = [];
+  for (const t of g_game.trains) {
+    if (t.wormIndex == idx)
+      trains.push(t);
+  }
+  return trains;
 }
 
 function init() {
@@ -430,6 +478,16 @@ function init() {
     let worm = {points};
     worm.length = wormLength(worm);
     g_game.worms.push(worm);
+  }
+
+  // Add a train to round worm
+  {
+    let train = {
+      wormIndex: 0,
+      pos: 0,
+      speed: g_options.trainSpeed,
+    };
+    g_game.trains.push(train);
   }
 
   setState(StateMain);
@@ -473,6 +531,21 @@ function rotateArrayLeft(a, n) {
 
 function update(dt) {
   g_CurrentState.update(dt);
+
+  // Update trains
+  for (let train of g_game.trains) {
+    const worm = g_game.worms[train.wormIndex];
+    const max_pos = worm.points.length - 1;
+    train.pos += train.speed;
+    if (train.pos >= max_pos) {
+      if (isWormClosed(worm)) {
+        train.pos -= max_pos;
+      }
+      else {
+        console.log("Crash!");
+      }
+    }
+  }
 }
 
 function lerp(a, b, dt) {
@@ -483,6 +556,17 @@ function render(ctxt) {
   ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   g_CurrentState.render(ctxt);
+
+  // Draw trains
+  for (const train of g_game.trains) {
+    const worm = g_game.worms[train.wormIndex];
+    ctxt.fillStyle = '#b00';
+
+    const pos = getTrainScreenPos(train);
+    ctxt.beginPath();
+    ctxt.arc(pos[0], pos[1], 6, 0, Math.PI*2);
+    ctxt.fill();
+  }
 }
 
 function loop(frameTime) {
@@ -559,6 +643,10 @@ window.addEventListener('DOMContentLoaded', function(main) {
   controlsOptions.add(g_options, "connectionDistance", 0, 100);
   controlsOptions.add(g_options, "grabDistance", 0, 100);
   controlsOptions.add(g_options, "splitDistance", 0, 100);
+  controlsOptions.add(g_options, "trainSpeed", 0.005, 0.1).onChange((v) => {
+    for (let train of g_game.trains)
+      train.speed = v;
+  });
 
   const renderOptions = gui.addFolder('Rendering');
   renderOptions.open();
