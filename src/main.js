@@ -4,6 +4,16 @@ const CANVAS_WIDTH  = 800;
 const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
 
+let g_options = {
+  samplingDistance   : 10,
+  curveTension       : 0.5,
+  curveSegments      : 10,
+  connectionDistance : 10,
+  grabDistance       : 30,
+  splitDistance      : 10,
+  showWormPoints     : false,
+};
+
 let g_canvas;
 let g_ctxt;
 let g_lastFrameTime = -1;
@@ -191,7 +201,6 @@ function rotateArrayLeft(a, n) {
 function update(dt) {
   // Pick point on worm closest to mouse
   const pmouse = g_mouse.pos();
-  const splitDistanceThreshold = 30;
   let minDistance = Number.MAX_VALUE;
   let closestWorm = null;
   let closestPoint = null;
@@ -245,10 +254,10 @@ function update(dt) {
   g_game.connecting_point = null;
 
   if (g_mouse.wasPressed(0)) {
-    if (closestHeadDistance < options.connectionDistance) {
+    if (closestHeadDistance < g_options.grabDistance) {
       g_game.grabbing = true;
       g_game.grabbedWorm = closestWormToGrab;
-    } else if (minDistance < splitDistanceThreshold) {
+    } else if (minDistance < g_options.splitDistance) {
       rotateArrayLeft(closestWorm.points, closestPointIndex);
       closestWorm.points.unshift(closestPoint);
       closestWorm.points.push(pmouse);
@@ -257,7 +266,7 @@ function update(dt) {
 
   hack:
   if (g_game.grabbing) {
-    if (closestTailDistance < options.connectionDistance) {
+    if (closestTailDistance < g_options.connectionDistance) {
       g_game.connecting_point = wormTail(closestWormToConnect);
 
       if (g_mouse.wasReleased(0)) {
@@ -280,7 +289,7 @@ function update(dt) {
 
      // Add new head if distance is > threshold
     const d = dist(wormHead(g_game.grabbedWorm), pmouse);
-    if (d > options.samplingDistance) {
+    if (d > g_options.samplingDistance) {
       g_game.grabbedWorm.points.push(pmouse);
     }
 
@@ -312,10 +321,10 @@ function update(dt) {
   if (g_mouse.isUp(0)) {
     g_game.grabbing = false;
 
-    if (closestHeadDistance < options.connectionDistance) {
+    if (closestHeadDistance < g_options.grabDistance) {
       g_game.grabbing_point = wormHead(closestWormToGrab);
     }
-    else if (minDistance < splitDistanceThreshold) {
+    else if (minDistance < g_options.splitDistance) {
       g_game.splitting_point = closestPoint.slice();
     }
   }
@@ -347,7 +356,7 @@ function render(ctxt) {
     ctxt.lineWidth = 2;
     ctxt.beginPath();
     ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-    ctxt.curve(worm.points.flat(), options.curveTension, options.curveSegments, false);
+    ctxt.curve(worm.points.flat(), g_options.curveTension, g_options.curveSegments, false);
     if (g_game.grabbing && worm === g_game.grabbedWorm) {
       const pmouse = g_mouse.pos();
       ctxt.lineTo(pmouse[0], pmouse[1]);
@@ -355,7 +364,7 @@ function render(ctxt) {
     ctxt.stroke();
 
     // Draw points at segment ends
-    if (1) {
+    if (g_options.showWormPoints) {
       ctxt.fillStyle = '#eee';
       const radius = 3;
       for (let i=0; i < points_len; ++i) {
@@ -363,7 +372,6 @@ function render(ctxt) {
         ctxt.beginPath();
         ctxt.arc(seg[0], seg[1], radius, 0, Math.PI*2);
         ctxt.fill();
-        //ctxt.fillText(i, seg[0]+5, seg[1]+5);
       }
     }
   }
@@ -448,21 +456,17 @@ function onMouseUp(event) {
   return false;
 }
 
-let options = {
-  samplingDistance: 10,
-  curveTension: 0.5,
-  curveSegments: 10,
-  connectionDistance: 30,
-};
-
 window.addEventListener('DOMContentLoaded', function(main) {
   g_canvas = document.querySelector('canvas');
 
   var gui = new dat.GUI();
-  gui.add(options, "samplingDistance", 0, 100);
-  gui.add(options, "curveTension", 0, 2).onChange(() => update());
-  gui.add(options, "curveSegments", 1, 30).onChange(() => update());
-  gui.add(options, "connectionDistance", 0, 100);
+  gui.add(g_options, "samplingDistance", 0, 100);
+  gui.add(g_options, "curveTension", 0, 2);
+  gui.add(g_options, "curveSegments", 1, 30);
+  gui.add(g_options, "connectionDistance", 0, 100);
+  gui.add(g_options, "grabDistance", 0, 100);
+  gui.add(g_options, "splitDistance", 0, 100);
+  gui.add(g_options, "showWormPoints");
 
   g_canvas.addEventListener('mousemove', onMouseMove);
   g_canvas.addEventListener('mousedown', onMouseDown);
