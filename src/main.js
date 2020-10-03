@@ -294,9 +294,12 @@ function update(dt) {
     }
 
     // Shorten tail
+
     const path = g_game.grabbedWorm.points;
     const maxLength = g_game.grabbedWorm.length;
-    let length = 0;
+
+    let length = dist(pmouse, wormHead(g_game.grabbedWorm)); // Add the distance to the cursor
+
     for (let i = path.length - 1; i > 0; --i) {
       const segmentLength = dist(path[i - 1], path[i]);
 
