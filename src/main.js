@@ -225,18 +225,21 @@ let StateDraggingWorm = {
       }
     }
     else if (g_mouse.wasReleased(0)) {
-      if (this.worm == closestWormToConnect) {
-        // Trying to connect to one's own tail, close the worm instead
-        this.worm.points[0] = wormHead(this.worm).slice();
-      }
-      else {
-        mergeWorm(this.worm, closestWormToConnect);
+      if (closestTailDistance < g_options.connectionDistance) {
+        if (this.worm == closestWormToConnect) {
+          // Trying to connect to one's own tail, close the worm instead
+          this.worm.points[0] = wormHead(this.worm).slice();
+        }
+        else {
+          mergeWorm(this.worm, closestWormToConnect);
 
-        // Delete the merged path
-        const index = g_game.worms.indexOf(closestWormToConnect);
-        if (index > -1)
-          g_game.worms.splice(index, 1);
+          // Delete the merged path
+          const index = g_game.worms.indexOf(closestWormToConnect);
+          if (index > -1)
+            g_game.worms.splice(index, 1);
+        }
       }
+
       setState(StateMain);
     }
   },
