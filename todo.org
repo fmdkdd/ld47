@@ -1,0 +1,3 @@
+Florent:
+- Adjust train positions after merging worms
+- Make train move with uniform speed regardless of sampling
