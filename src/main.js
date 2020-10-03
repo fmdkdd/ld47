@@ -59,20 +59,32 @@ function isWormClosed(worm) {
 function init() {
 
   // Create a round worm
-  const center_x = 300;
-  const center_y = 300;
-  const radius = 30;
-  const segments = 9;
-  const angle_increase = (2 * Math.PI) / (segments-1);
-  const points = [];
-  for (let i=0; i < segments-1; ++i) {
-    const angle = i * angle_increase;
-    points.push(point(center_x + Math.cos(angle) * radius,
-                      center_y + Math.sin(angle) * radius));
+  {
+    const center_x = 300;
+    const center_y = 300;
+    const radius = 30;
+    const segments = 9;
+    const angle_increase = (2 * Math.PI) / (segments-1);
+    const points = [];
+    for (let i=0; i < segments-1; ++i) {
+      const angle = i * angle_increase;
+      points.push(point(center_x + Math.cos(angle) * radius,
+                        center_y + Math.sin(angle) * radius));
+    }
+    // Close
+    points.push(points[0].slice());
+    g_game.worms.push({points});
   }
-  // Close
-  points.push(points[0].slice());
-  g_game.worms.push({points});
+
+  // Create a straight worm
+  {
+    const segments = 9;
+    const points = [];
+    for (let i=0; i < segments; ++i) {
+      points.push(point(400, 200 + i * 20));
+    }
+    g_game.worms.push({points});
+  }
 }
 
 function point(x, y) {
