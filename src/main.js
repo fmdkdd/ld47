@@ -10,6 +10,8 @@ let g_options = {
   grabDistance       : 30,
   splitDistance      : 10,
   showWormPoints     : false,
+  glowSpeed          : 0.002,
+  glowIntensity      : 0.3
 };
 
 let g_canvas;
@@ -107,11 +109,33 @@ let StateMain = {
       const worm = g_game.worms[w_i];
       const points_len = worm.points.length;
 
-      ctxt.strokeStyle = 'white';
-      ctxt.lineWidth = 2;
+      // Glow layer
+
+      // pink #ff61fe #ffdeff
+      // blue #29dcfd #cff7ff
+
+      const points = worm.points.flat();
+
+      const glow = 0.5 * Math.sin(g_lastFrameTime * g_options.glowSpeed) + 1;
+
+      ctxt.globalCompositeOperation = 'lighter';
+      ctxt.filter = 'blur(5px)';
+      ctxt.strokeStyle = '#29dcfd';
+      ctxt.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow);
       ctxt.beginPath();
       ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-      ctxt.curve(worm.points.flat(), g_options.curveTension, g_options.curveSegments, false);
+      ctxt.curve(points, g_options.curveTension, g_options.curveSegments, false);
+      ctxt.stroke();
+
+      // Core layer
+
+      ctxt.globalCompositeOperation = 'source-over';
+      ctxt.filter = 'none';
+      ctxt.strokeStyle = '#cff7ff';
+      ctxt.lineWidth = 4;
+      ctxt.beginPath();
+      ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
+      ctxt.curve(points, g_options.curveTension, g_options.curveSegments, false);
       ctxt.stroke();
 
       // Draw points at segment ends
@@ -517,6 +541,8 @@ window.addEventListener('DOMContentLoaded', function(main) {
   gui.add(g_options, "grabDistance", 0, 100);
   gui.add(g_options, "splitDistance", 0, 100);
   gui.add(g_options, "showWormPoints");
+  gui.add(g_options, "glowSpeed", 0, 1);
+  gui.add(g_options, "glowIntensity", 0, 0.1);
 
   g_canvas.addEventListener('mousemove', onMouseMove);
   g_canvas.addEventListener('mousedown', onMouseDown);
