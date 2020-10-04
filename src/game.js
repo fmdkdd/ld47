@@ -9,7 +9,8 @@ let g_game = {
   doors: [],
   wires: [],
   animations: [],
-  grid: null
+  grid: null,
+  screenshake: null
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,11 +124,14 @@ let StateMain = {
     updateWires(dt);
     updateAnimations(dt);
     g_game.grid.update(dt);
+    g_game.screenshake.update(dt);
   },
 
   render(ctxt) {
 
     g_game.grid.render(ctxt);
+
+    g_game.screenshake.render(ctxt);
 
     // Draw worms
     for (let w_i=0, len=g_game.worms.length; w_i < len; ++w_i) {
@@ -240,6 +244,11 @@ let StateDraggingWorm = {
         --w_i;
 
         g_game.animations.push(new WormExplosion(worm, 'blue'));
+
+        // BrrRrRRrrr
+        g_game.screenshake.amplitude = 2;
+        g_game.screenshake.speed = 2;
+        g_game.screenshake.playFor(300);
       }
     }
 
@@ -339,6 +348,7 @@ let StateDraggingWorm = {
     updateWires(dt);
     updateAnimations(dt);
     g_game.grid.update(dt);
+    g_game.screenshake.update(dt);
   },
 
   render(ctxt) {
@@ -603,6 +613,7 @@ function testLevel() {
   resetGameState();
 
   g_game.grid = new Grid();
+  g_game.screenshake = new ScreenShake();
 
   // Round worms
   g_game.worms.push(createRoundWorm(300, 300, 30, 9));

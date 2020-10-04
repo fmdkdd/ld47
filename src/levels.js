@@ -11,6 +11,7 @@ function loadLevel(n) {
   resetGameState();
 
   g_game.grid = new Grid();
+  g_game.screenshake = new ScreenShake();
 
   g_levels[n]();
 
