@@ -115,7 +115,7 @@ function render(ctxt) {
 function mainLoop(frameTime) {
   g_stats.begin();
 
-  const dt = g_lastFrameTime > 0 ? frameTime - g_lastFrameTime : 0;
+  const dt = g_lastFrameTime > 0 ? frameTime - g_lastFrameTime : 5;
   g_lastFrameTime = frameTime;
 
   g_ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);

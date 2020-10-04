@@ -26,10 +26,10 @@ class Door
 
   render(ctx)
   {
-    const points = this.points()
+    const points = this.points();
 
-    drawShape(ctx, points[0], 'pink');
-    drawShape(ctx, points[1], 'pink');
+    drawShape(ctx, points[0], this.color);
+    drawShape(ctx, points[1], this.color);
   }
 
   points()

@@ -6,6 +6,7 @@ Florent:
 - [ ] BUG: Train on last segment may not crash and skip ahead
 - [X] Check worm length when moving
 - [ ] SFX/MUSIC!!!
+- [ ] unclosed RoundWorms instead of StraightWorms?
 
 Merwan:
 - [X] End-of-level nodes
@@ -13,6 +14,8 @@ Merwan:
 
 Open:
 - [ ] Speedup/slowdown areas
+- [ ] Add reset button on worm death
+- [ ] Ditch rendering wire: use same color for linked switch and door
 
 Polish:
 - [ ] Level transition

@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 4;
+let g_currentLevel = 6;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
@@ -44,16 +44,30 @@ let g_levels = (function() {
     return n;
   }
 
-  function Train(wormId) {
-    const t = createTrain(wormId);
+  function Train(worm) {
+    const t = createTrain(worm.id);
     g_game.trains.push(t);
     return t;
   }
 
-  function Dooro(x, y, openDistance, openSpeed, colorName) {
+  function Dooro(x, y, openDistance, openSpeed, colorName, rot=0, height=100) {
     const d = new Door(point(x, y), openDistance, openSpeed, colorName);
+    d.rot = rot;
+    d.height = height;
     g_game.doors.push(d);
     return d;
+  }
+
+  function Switch(x, y, radius, colorName) {
+    const n = new LoopNode(point(x, y), radius, colorName);
+    g_game.loopNodes.push(n);
+    return n;
+  }
+
+  function Wiro(node, door) {
+    const w = new Wire(node, door);
+    g_game.wires.push(w);
+    return w;
   }
 
   return [
@@ -89,7 +103,7 @@ let g_levels = (function() {
     function level1() {
       const w0 = RoundWorm(250, 300, 40, 20);
       GoalNode(550, 300, 10, 'blue');
-      Train(w0.id);
+      Train(w0);
 
       Wall([-50, -50,
             1000, -50,
@@ -119,7 +133,7 @@ let g_levels = (function() {
     function level2() {
       const w0 = RoundWorm(120, 300, 30, 20);
       GoalNode(655, 295, 10, 'blue');
-      Train(w0.id);
+      Train(w0);
 
       Wall([
         81, 241,
@@ -226,7 +240,7 @@ let g_levels = (function() {
     function level3() {
       const w0 = RoundWorm(120, 300, 20, 20);
       GoalNode(683, 293, 10, 'blue');
-      Train(w0.id);
+      Train(w0);
 
       for (let i=0; i < 20; ++i) {
         const d = Dooro(200 + i * 21, 300, 20, 0.001, 'pink');
@@ -306,6 +320,122 @@ let g_levels = (function() {
         300, 240,
         500, 106,
         534, 30
+      ], 'orange');
+
+      Wall([-50, -50,
+            1000, -50,
+            1000,  50,
+            -50,  20],
+           'pink');
+
+      Wall([-50,  -50,
+            50,  -50,
+            10, 1000,
+            -50, 1000],
+           'blue');
+
+      Wall([-50, 1000,
+            -50,  550,
+            1000,  590,
+            1000,  610],
+           'pink');
+
+      Wall([750, -50,
+            850, -50,
+            850, 610,
+            780, 610],
+           'blue');
+    },
+
+    function level5() {
+      const w0 = RoundWorm(120, 100, 25, 20);
+
+      {
+        const s = Switch(158, 223, 8, 'orange');
+        const d = Dooro(300, 280, 40, 0.004, 'orange', -12, 1000);
+        d.age = 1200;
+        Wiro(s, d);
+      }
+
+      {
+        const s = Switch(442, 460, 8, 'pink');
+        const d = Dooro(600, 380, 15, 0.008, 'pink', 2.3, 1000);
+        d.age = 1400;
+        Wiro(s, d);
+      }
+
+      GoalNode(600, 160, 10, 'blue');
+
+      Wall([-50, -50,
+            1000, -50,
+            1000,  50,
+            -50,  20],
+           'pink');
+
+      Wall([-50,  -50,
+            50,  -50,
+            10, 1000,
+            -50, 1000],
+           'blue');
+
+      Wall([-50, 1000,
+            -50,  550,
+            1000,  590,
+            1000,  610],
+           'pink');
+
+      Wall([750, -50,
+            850, -50,
+            850, 610,
+            780, 610],
+           'blue');
+    },
+
+    function level6() {
+      Train(RoundWorm(187, 114, 25, 20));
+      Train(RoundWorm(718, 502, 25, 20));
+
+      {
+        const s = Switch(518, 358, 8, 'orange');
+        const d = Dooro(195, 306, 40, 0.004, 'orange', 1.5, 180);
+        d.age = 1200;
+        Wiro(s, d);
+      }
+
+      {
+        const s = Switch(199, 433, 8, 'pink');
+        const d = Dooro(585, 273, 15, 0.008, 'pink', 1.66, 200);
+        d.age = 1400;
+        Wiro(s, d);
+      }
+
+      GoalNode(600, 160, 10, 'blue');
+
+      Wall([
+        766, 169,
+        649, 280,
+        627, 371,
+        662, 427,
+        773, 410
+      ], 'blue');
+
+      Wall([
+        788, 468,
+        750, 588,
+        632, 548,
+        635, 467,
+        512, 446,
+        413, 384,
+        426, 489,
+        419, 566,
+        789, 592
+      ], 'pink');
+
+      Wall([
+        309, 19,
+        370, 582,
+        434, 583,
+        407, 19
       ], 'orange');
 
       Wall([-50, -50,
