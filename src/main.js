@@ -18,8 +18,8 @@ let g_options = {
   showWormPoints     : false,
   glowSpeed          : 0.002,
   glowIntensity      : 0.3,
-  trainSpeed         : 0.01,
-  gridSpacing        : 100
+  gridSpacing        : 100,
+  trainSpeed         : 0.5,
 };
 
 let g_stats;
@@ -198,7 +198,8 @@ let StateMain = {
 };
 
 function getTrainScreenPos(train) {
-  const path = g_game.worms[train.wormIndex].points;
+  const worm = g_game.worms[train.wormIndex]
+  const path = worm.points;
   const a = path[Math.trunc(train.pos) + 1];
   const b = path[Math.trunc(train.pos) + 0];
   const frac = train.pos - Math.trunc(train.pos);
@@ -308,6 +309,13 @@ let StateDraggingWorm = {
     }
     else if (g_mouse.wasReleased(0)) {
       if (closestTailDistance < g_options.connectionDistance) {
+        // Save train screen positions to adjust it later
+        let savedTrainsScreenPos = [];
+        for (let train of getTrainsOnWorm(closestWormToConnect)) {
+          savedTrainsScreenPos.push(getTrainScreenPos(train));
+        }
+
+
         if (this.worm == closestWormToConnect) {
           // Trying to connect to one's own tail, close the worm instead
           this.worm.points[0] = wormHead(this.worm).slice();
@@ -320,6 +328,9 @@ let StateDraggingWorm = {
           if (index > -1)
             g_game.worms.splice(index, 1);
         }
+
+        // Adjust trains positions after merge
+        adjustTrainPositions(this.worm, savedTrainsScreenPos);
       }
 
       setState(StateMain);
@@ -543,13 +554,19 @@ function update(dt) {
   // Update trains
   for (let train of g_game.trains) {
     const worm = g_game.worms[train.wormIndex];
-    const max_pos = worm.points.length - 1;
-    train.pos += train.speed;
+    const path = worm.points
+    const max_pos = path.length - 1;
+    // Normalize speed by segment length so that the train
+    // always advances at the same speed regardless of segment length
+    const a = path[Math.trunc(train.pos) + 1];
+    const b = path[Math.trunc(train.pos) + 0];
+    train.pos += train.speed / dist(a, b);
     if (train.pos >= max_pos) {
       if (isWormClosed(worm)) {
         train.pos -= max_pos;
       }
       else {
+        // TODO
         console.log("Crash!");
       }
     }
@@ -651,7 +668,7 @@ window.addEventListener('DOMContentLoaded', function(main) {
   controlsOptions.add(g_options, "connectionDistance", 0, 100);
   controlsOptions.add(g_options, "grabDistance", 0, 100);
   controlsOptions.add(g_options, "splitDistance", 0, 100);
-  controlsOptions.add(g_options, "trainSpeed", 0.005, 0.1).onChange((v) => {
+  controlsOptions.add(g_options, "trainSpeed", 0.1, 1).onChange((v) => {
     for (let train of g_game.trains)
       train.speed = v;
   });

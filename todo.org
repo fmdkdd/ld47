@@ -1,3 +1,4 @@
 Florent:
-- Adjust train positions after merging worms
-- Make train move with uniform speed regardless of sampling
+- [X] Adjust train positions after merging worms
+- [X] Make train move with uniform speed regardless of sampling
+- [ ] Gameover when train overflows tracks
