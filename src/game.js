@@ -120,9 +120,14 @@ let StateMain = {
       const worm = g_game.worms[w_i];
       const points_len = worm.points.length;
 
-      drawPath(ctxt, worm.points, 'blue');
+      let danger = 0;
+      if (!isWormClosed(worm)) {
+        danger = computeDangerForWorm(worm);
+      }
+      let [strokeColor, glowColor] = getWormColors(danger);
+      drawPath(ctxt, worm.points, strokeColor, glowColor);
 
-      // Draw points at segment ends
+      // Draw debug points
       if (g_options.showWormPoints) {
         ctxt.fillStyle = '#eee';
         const radius = 3;
@@ -611,4 +616,25 @@ function renderTrains(ctxt) {
 function assert(b) {
   if (!b)
     throw "Assert failed";
+}
+
+function computeDangerForWorm(worm) {
+  let danger = 0;
+  const middle = worm.points.length / 2;
+  for (const train of getTrainsOnWorm(worm)) {
+    const segIdx = Math.trunc(train.pos);
+    const d = Math.abs(segIdx - middle) / middle;
+    if (d > danger)
+      danger = d;
+  }
+  return clamp(danger, 0, 1);
+}
+
+function getWormColors(danger) {
+  if (danger < 0.5) {
+    return g_colors['blue'];
+  }
+  else {
+    return g_colors['pink'];
+  }
 }

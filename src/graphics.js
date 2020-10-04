@@ -37,10 +37,8 @@ function drawShape(ctx, points, colorName)
   ctx.fill();
 }
 
-function drawPath(ctx, points, colorName)
+function drawPath(ctx, points, strokeColor, glowColor)
 {
-  const color = g_colors[colorName];
-
   const curvePoints = points.flat();
 
   // Glow layer
@@ -49,7 +47,7 @@ function drawPath(ctx, points, colorName)
   {
     ctx.globalCompositeOperation = 'lighter';
     ctx.filter = 'blur(5px)';
-    ctx.strokeStyle = g_colors['blue'][1];
+    ctx.strokeStyle = glowColor;
     ctx.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
     ctx.beginPath();
     ctx.moveTo(points[0][0], points[0][1]);
@@ -61,7 +59,7 @@ function drawPath(ctx, points, colorName)
 
   ctx.globalCompositeOperation = 'source-over';
   ctx.filter = 'none';
-  ctx.strokeStyle = g_colors['blue'][0];
+  ctx.strokeStyle = strokeColor;
   ctx.lineWidth = 4;
   ctx.beginPath();
   ctx.moveTo(points[0][0], points[0][1]);
