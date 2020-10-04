@@ -227,7 +227,14 @@ let StateDraggingWorm = {
           // Save train screen positions to adjust it later
           let savedTrainsScreenPos = [];
           for (let train of getTrainsOnWorm(this.worm)) {
-            savedTrainsScreenPos.push(getTrainScreenPos(train));
+            // Crash trains that are on track that is to be deleted
+            if (Math.trunc(train.pos) < i - 1)
+            {
+              train.hasCrashed = true;
+              setState(StateGameover);
+              return;
+            } else
+              savedTrainsScreenPos.push(getTrainScreenPos(train));
           }
 
           path.splice(0, i - 1);
