@@ -466,6 +466,7 @@ function createRoundWorm(x, y, radius, segments) {
 }
 
 function createTrain(wormId) {
+  assert(getObject(wormId) != null);
   const train = {
     id: genId(),
     wormId,
@@ -598,4 +599,9 @@ function renderTrains(ctxt) {
     ctxt.arc(pos[0], pos[1], 6, 0, Math.PI*2);
     ctxt.fill();
   }
+}
+
+function assert(b) {
+  if (!b)
+    throw "Assert failed";
 }
