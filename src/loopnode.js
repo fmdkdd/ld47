@@ -2,9 +2,10 @@
 
 class LoopNode
 {
-  constructor(pos, color, onSurrounded)
+  constructor(pos, radius, color, onSurrounded)
   {
     this.pos = pos;
+    this.radius = radius;
     this.color = color;
     this.onSurrounded = onSurrounded;
 
@@ -32,6 +33,25 @@ class LoopNode
     }
   }
 
+  hits(worm)
+  {
+    for (let i = 1; i < worm.points.length; ++i)
+    {
+      const wormA = worm.points[i - 1];
+      const wormB = worm.points[i];
+
+      const hit = Intersects.circleLine(
+        this.pos[0], this.pos[1], this.radius,
+        wormA[0], wormA[1], wormB[0], wormB[1]
+      );
+
+      if (hit)
+        return true;
+    }
+
+    return false;
+  }
+
   render(ctx)
   {
     // TODO draw func?
@@ -45,7 +65,7 @@ class LoopNode
       ctx.filter = 'blur(5px)';
 
       ctx.beginPath();
-      ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
+      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
       ctx.fill();
     }
 
@@ -54,7 +74,7 @@ class LoopNode
     ctx.filter = 'none';
 
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
+    ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
     ctx.fill();
   }
 
@@ -88,7 +108,7 @@ class LoopNode
   }
 }
 
-function makeEndLevelNode(pos, color)
+function makeEndLevelNode(pos, radius, color)
 {
-  return new LoopNode(pos, color, () => setState(StateLevelOver));
+  return new LoopNode(pos, radius, color, () => setState(StateLevelOver));
 }

@@ -599,10 +599,10 @@ function gameInit() {
 
   // Test loop node
   {
-    let node = new LoopNode(point(500, 500), 'orange');
+    let node = new LoopNode(point(500, 500), 10, 'orange');
     g_game.loopNodes.push(node);
 
-    g_game.loopNodes.push(makeEndLevelNode(point(600, 100), 'blue'));
+    g_game.loopNodes.push(makeEndLevelNode(point(600, 100), 10, 'blue'));
   }
 
   // Obstacles
@@ -647,7 +647,7 @@ function gameInit() {
     const door = new Door(point(600, 400), 50, 0.001, 'pink');
     g_game.doors.push(door);
 
-    const node = new LoopNode(point(300, 450), 'pink');
+    const node = new LoopNode(point(300, 450), 20, 'pink');
     g_game.loopNodes.push(node);
 
     const wire = new Wire(node, door);
