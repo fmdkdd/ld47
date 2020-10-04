@@ -1,6 +1,7 @@
 'use strict';
 
 let g_game = {
+  objects: {},
   worms: [],
   trains: [],
   particleSystems: [],
@@ -278,6 +279,11 @@ let StateDraggingWorm = {
           const index = g_game.worms.indexOf(closestWormToConnect);
           if (index > -1)
             g_game.worms.splice(index, 1);
+
+          // Move trains of deleted worm to merged worm
+          for (let train of getTrainsOnWorm(closestWormToConnect)) {
+            train.wormId = this.worm.id;
+          }
         }
 
         // Adjust trains positions after merge
@@ -343,7 +349,7 @@ let StateGameover = {
 };
 
 function getTrainScreenPos(train) {
-  const worm = g_game.worms[train.wormIndex];
+  const worm = getObject(train.wormId);
   const path = worm.points;
   const a = path[Math.trunc(train.pos) + 0];
   const b = path[Math.trunc(train.pos) + 1];
@@ -411,40 +417,90 @@ function mergeWorm(a, b) {
   a.length += b.length;
 }
 
+let g_globalIdCounter = 0;
+
+function genId() {
+  return g_globalIdCounter++;
+}
+
+function registerObject(obj) {
+  if (g_game.objects[obj.id]) {
+    throw `ID ${obj.id} already registered`;
+  } else {
+    g_game.objects[obj.id] = obj;
+  }
+}
+
+function unregisterObject(obj) {
+  if (g_game.objects[obj.id] == null)
+    throw `No object at id ${obj.id}`;
+  else
+    delete g_game.objects[obj.id];
+}
+
+function getObject(id) {
+  if (g_game.objects[id] == null)
+    throw `No object at id ${id}`;
+  else
+    return g_game.objects[id];
+}
+
 function getTrainsOnWorm(worm) {
-  const idx = g_game.worms.indexOf(worm);
   const trains = [];
   for (const t of g_game.trains) {
-    if (t.wormIndex == idx)
+    if (t.wormId == worm.id)
       trains.push(t);
   }
   return trains;
 }
 
+function createWorm(points) {
+  const worm = {
+    id: genId(),
+    points,
+  };
+  worm.length = wormLength(worm);
+  registerObject(worm);
+  return worm;
+}
+
+function createRoundWorm(x, y, radius, segments) {
+  const angle_increase = (2 * Math.PI) / (segments-1);
+  const points = [];
+  for (let i=0; i < segments-1; ++i) {
+    const angle = i * angle_increase;
+    points.push(point(x + Math.cos(angle) * radius,
+                      y + Math.sin(angle) * radius));
+  }
+  // Close
+  points.push(points[0].slice());
+  return createWorm(points);
+}
+
+function createTrain(wormId) {
+  const train = {
+    id: genId(),
+    wormId,
+    pos: 0,
+    hasCrashed: false,
+    speed: g_options.trainSpeed,
+  };
+  registerObject(train);
+  return train;
+}
+
 function gameInit() {
+  // Trash state
+  g_game.objects = {};
   g_game.worms.length = 0;
   g_game.trains.length = 0;
+  g_game.particleSystems.length = 0;
   g_game.loopNodes.length = 0;
 
-  // Create a round worm
-  {
-    const center_x = 300;
-    const center_y = 300;
-    const radius = 30;
-    const segments = 9;
-    const angle_increase = (2 * Math.PI) / (segments-1);
-    const points = [];
-    for (let i=0; i < segments-1; ++i) {
-      const angle = i * angle_increase;
-      points.push(point(center_x + Math.cos(angle) * radius,
-                        center_y + Math.sin(angle) * radius));
-    }
-    // Close
-    points.push(points[0].slice());
-    let worm = {points};
-    worm.length = wormLength(worm);
-    g_game.worms.push(worm);
-  }
+  // Round worms
+  g_game.worms.push(createRoundWorm(300, 300, 30, 9));
+  g_game.worms.push(createRoundWorm(100, 100, 40, 9));
+  g_game.worms.push(createRoundWorm(500, 200, 20, 9));
 
   // Create a straight worm
   {
@@ -453,21 +509,13 @@ function gameInit() {
     for (let i=0; i < segments; ++i) {
       points.push(point(400, 200 + i * 20));
     }
-    let worm = {points};
-    worm.length = wormLength(worm);
-    g_game.worms.push(worm);
+    g_game.worms.push(createWorm(points));
   }
 
   // Add a train to round worm
-  {
-    let train = {
-      wormIndex: 0,
-      pos: 0,
-      hasCrashed: false,
-      speed: g_options.trainSpeed,
-    };
-    g_game.trains.push(train);
-  }
+  g_game.trains.push(createTrain(g_game.worms[0].id));
+  g_game.trains.push(createTrain(g_game.worms[1].id));
+  g_game.trains.push(createTrain(g_game.worms[2].id));
 
   // Test loop node
   {
@@ -490,7 +538,7 @@ function updateTrains(dt) {
     if (train.hasCrashed)
       continue;
 
-    const worm = g_game.worms[train.wormIndex];
+    const worm = getObject(train.wormId);
     const path = worm.points;
     const max_pos = path.length - 1;
     // Normalize speed by segment length so that the train
@@ -515,7 +563,6 @@ function renderTrains(ctxt) {
     if (train.hasCrashed)
       continue;
 
-    const worm = g_game.worms[train.wormIndex];
     ctxt.fillStyle = '#b00';
 
     const pos = getTrainScreenPos(train);
