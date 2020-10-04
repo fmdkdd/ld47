@@ -1,4 +1,18 @@
 Florent:
 - [X] Adjust train positions after merging worms
 - [X] Make train move with uniform speed regardless of sampling
-- [ ] Gameover when train overflows tracks
+- [X] Gameover when train overflows tracks
+- [ ] Forbid crossing own worm (to avoid shortcut bug?)
+- [ ] Color worm by danger
+
+Open:
+- [ ] Speedup/slowdown areas
+
+Polish:
+- [ ] To make connection easier, maybe allow connection beyond the
+  connectionDistance?
+- [ ] Small gap when rendering closed worms
+
+Ideas:
+- Score by speed to finish level?
+- Less punitive: lives/reduce size of train instead of gameover
