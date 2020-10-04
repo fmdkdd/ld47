@@ -10,6 +10,8 @@ function loadLevel(n) {
 
   resetGameState();
 
+  g_game.grid = new Grid();
+
   g_levels[n]();
 
   setState(StateMain);
