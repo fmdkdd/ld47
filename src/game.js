@@ -366,6 +366,28 @@ let StateDraggingWorm = {
   },
 };
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Level finished
+
+let StateLevelOver = {
+  update(dt) {
+    if (g_mouse.wasPressed(0)) {
+      gameInit();
+    }
+  },
+
+  render(ctxt) {
+    StateMain.render(ctxt);
+    ctxt.fillStyle = 'rgba(0,0,0,0.8)';
+    ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctxt.fillStyle = "#fff";
+    ctxt.font = '48px sans-serif';
+    ctxt.fillText("Level over", 300, 300);
+  },
+};
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // StateGameover
 
@@ -579,6 +601,8 @@ function gameInit() {
   {
     let node = new LoopNode(point(500, 500), 'orange');
     g_game.loopNodes.push(node);
+
+    g_game.loopNodes.push(makeEndLevelNode(point(600, 100), 'blue'));
   }
 
   // Obstacles

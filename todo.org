@@ -6,6 +6,9 @@ Florent:
 - [ ] Forbid crossing own worm (to avoid shortcut bug?)
 - [ ] Check worm length when moving
 
+Merwan:
+- [X] End-of-level nodes
+
 Open:
 - [ ] Speedup/slowdown areas
 

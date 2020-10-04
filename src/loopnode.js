@@ -2,10 +2,11 @@
 
 class LoopNode
 {
-  constructor(pos, color)
+  constructor(pos, color, onSurrounded)
   {
     this.pos = pos;
     this.color = color;
+    this.onSurrounded = onSurrounded;
 
     this.enabled = false;
     this.anchorPos = this.pos;
@@ -19,6 +20,12 @@ class LoopNode
     {
       if (this.isSurrounded(g_game.worms[w_i]))
       {
+        // Execute the callback
+        if (this.onSurrounded && !this.enabled)
+        {
+          this.onSurrounded();
+        }
+
         this.enabled = true;
         break;
       }
@@ -79,4 +86,9 @@ class LoopNode
 
     return (hits & 1) == 1;
   }
+}
+
+function makeEndLevelNode(pos, color)
+{
+  return new LoopNode(pos, color, () => setState(StateLevelOver));
 }
