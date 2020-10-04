@@ -2,19 +2,23 @@
 
 class LoopNode
 {
-  constructor(pos, radius, color, onSurrounded)
+  constructor(pos, radius, color, drawHint, onSurrounded)
   {
     this.pos = pos;
     this.radius = radius;
     this.color = color;
+    this.drawHint = drawHint;
     this.onSurrounded = onSurrounded;
 
     this.enabled = false;
     this.anchorPos = this.pos;
+    this.age = 0;
   }
 
   update(dt)
   {
+    this.age += dt;
+
     this.enabled = false;
 
     for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i)
@@ -54,9 +58,9 @@ class LoopNode
 
   render(ctx)
   {
-    // TODO draw func?
-
     const color = g_colors[this.color];
+
+    ctx.save();
 
     if (g_options.glowEnabled)
     {
@@ -76,6 +80,35 @@ class LoopNode
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
     ctx.fill();
+
+    if (this.drawHint)
+    {
+      const dur = 10000;
+      const dur2 = dur / 2;
+
+      const progress = (this.age % dur) / dur;
+
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.5;
+      ctx.strokeStyle = '#DCDCDC';
+      ctx.setLineDash([1, 15]);
+      ctx.beginPath();
+
+      if (progress < 0.5)
+      {
+        const angle = lerp(0, 2 * Math.PI, progress / 0.5);
+        ctx.arc(this.pos[0], this.pos[1], this.radius + 50, -Math.PI * 0.5, -Math.PI * 0.5 + angle, false);
+      }
+      else
+      {
+        const angle = lerp(0, 2 * Math.PI, (progress - 0.5) / 0.5);
+        ctx.arc(this.pos[0], this.pos[1], this.radius + 50, -Math.PI * 0.5, -Math.PI * 0.5 + angle, true);
+      }
+
+      ctx.stroke();
+    }
+
+    ctx.restore();
   }
 
   isSurrounded(worm)
@@ -110,5 +143,5 @@ class LoopNode
 
 function makeEndLevelNode(pos, radius, color)
 {
-  return new LoopNode(pos, radius, color, () => setState(StateLevelOver));
+  return new LoopNode(pos, radius, color, true, () => setState(StateLevelOver));
 }

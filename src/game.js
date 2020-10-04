@@ -611,10 +611,10 @@ function gameInit() {
 
   // Test loop node
   {
-    let node = new LoopNode(point(500, 500), 10, 'orange');
+    let node = new LoopNode(point(500, 500), 10, 'orange', true);
     g_game.loopNodes.push(node);
 
-    g_game.loopNodes.push(makeEndLevelNode(point(600, 100), 10, 'blue'));
+    g_game.loopNodes.push(makeEndLevelNode(point(600, 100), 10, 'blue', true));
   }
 
   // Obstacles
