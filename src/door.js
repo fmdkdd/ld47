@@ -1,9 +1,9 @@
 class Door
 {
-  constructor(center, openDistance, openSpeed, color)
+  constructor(pos, openDistance, openSpeed, color)
 
   {
-    this.center = center;
+    this.pos = pos;
     this.openDistance = openDistance;
     this.openSpeed = openSpeed;
     this.color = color;
@@ -12,6 +12,8 @@ class Door
 
     this.openRatio = 0; // [0, 1]
     this.age = 0;
+
+    this.powered = true;
   }
 
   update(dt)
@@ -36,8 +38,8 @@ class Door
     ];
 
     const dir = point(0, this.openRatio * this.openDistance);
-    points[0] = points[0].map(p => vadd(vadd(p, this.center), dir));
-    points[1] = points[1].map(p => vsub(vadd(p, this.center), dir));
+    points[0] = points[0].map(p => vadd(vadd(p, this.pos), dir));
+    points[1] = points[1].map(p => vsub(vadd(p, this.pos), dir));
 
     return points;
   }
@@ -47,6 +49,8 @@ const OpenState =
 {
   update: function(dt, door)
   {
+    if (!door.powered) return;
+
     door.age += dt;
     door.openRatio = 0.5 * Math.sin(door.age * door.openSpeed) + 0.5;
   }

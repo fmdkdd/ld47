@@ -6,10 +6,22 @@ class LoopNode
   {
     this.pos = pos;
     this.color = color;
+
+    this.enabled = false;
   }
 
   update(dt)
   {
+    this.enabled = false;
+
+    for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i)
+    {
+      if (this.isSurrounded(g_game.worms[w_i]))
+      {
+        this.enabled = true;
+        break;
+      }
+    }
   }
 
   render(ctx)
@@ -41,7 +53,7 @@ class LoopNode
   isSurrounded(worm)
   {
     if (!isWormClosed(worm))
-      return;
+      return false;
 
     // Cast an horizontal ray from the node's position.
     // Odd number of intersections = the node is surrounded

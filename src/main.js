@@ -187,13 +187,11 @@ window.addEventListener('DOMContentLoaded', function() {
   var gui = new dat.GUI();
 
   const curveOptions = gui.addFolder('Curve sampling');
-  curveOptions.open();
   curveOptions.add(g_options, "samplingDistance", 0, 100);
   curveOptions.add(g_options, "curveTension", 0, 2);
   curveOptions.add(g_options, "curveSegments", 1, 30);
 
   const controlsOptions = gui.addFolder('Controls');
-  controlsOptions.open();
   controlsOptions.add(g_options, "connectionDistance", 0, 100);
   controlsOptions.add(g_options, "grabDistance", 0, 100);
   controlsOptions.add(g_options, "splitDistance", 0, 100);
@@ -203,7 +201,6 @@ window.addEventListener('DOMContentLoaded', function() {
   });
 
   const renderOptions = gui.addFolder('Rendering');
-  renderOptions.open();
   renderOptions.add(g_options, "showWormPoints");
   renderOptions.add(g_options, "glowEnabled");
   renderOptions.add(g_options, "glowSpeed", 0, 0.01);

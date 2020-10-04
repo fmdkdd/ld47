@@ -8,6 +8,7 @@ let g_game = {
   loopNodes: [],
   obstacles: [],
   doors: [],
+  wires: []
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -55,15 +56,6 @@ let StateMain = {
           }
         }
       }
-
-      // Check node loops
-      for (let node of g_game.loopNodes)
-      {
-        if (node.isSurrounded(worm))
-        {
-          console.log('surrounded');
-        }
-      }
     }
 
     this.grabbingPoint = null;
@@ -108,6 +100,7 @@ let StateMain = {
 
     updateLoopNodes(dt);
     updateDoors(dt);
+    updateWires(dt);
     updateParticles(dt);
   },
 
@@ -140,10 +133,11 @@ let StateMain = {
         }
       }
 
-      g_game.particleSystems.forEach(system => system.render(ctxt));
+      g_game.wires.forEach(wire => wire.render(ctxt));
       g_game.loopNodes.forEach(node => node.render(ctxt));
       g_game.doors.forEach(door => door.render(ctxt));
       g_game.obstacles.forEach(obs => obs.render(ctxt));
+      g_game.particleSystems.forEach(system => system.render(ctxt));
 
       renderTrains(ctxt);
     }
@@ -296,6 +290,7 @@ let StateDraggingWorm = {
 
     updateLoopNodes(dt);
     updateDoors(dt);
+    updateWires(dt);
     updateParticles(dt);
   },
 
@@ -499,6 +494,7 @@ function gameInit() {
   g_game.loopNodes.length = 0;
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
+  g_game.wires.length = 0;
 
   // Round worms
   g_game.worms.push(createRoundWorm(300, 300, 30, 9));
@@ -543,9 +539,16 @@ function gameInit() {
     ], 'blue'));
   }
 
-  // Door
+  // Doors
   {
-    g_game.doors.push(new Door(point(100, 400), 50, 0.001, 'pink'));
+    const door = new Door(point(600, 400), 50, 0.001, 'pink');
+    g_game.doors.push(door);
+
+    const node = new LoopNode(point(300, 400), 'pink');
+    g_game.loopNodes.push(node);
+
+    const wire = new Wire(node, door);
+    g_game.wires.push(wire);
   }
 
   setState(StateMain);
@@ -558,7 +561,12 @@ function updateLoopNodes(dt)
 
 function updateDoors(dt)
 {
-  g_game.doors.forEach(node => node.update(dt));
+  g_game.doors.forEach(door => door.update(dt));
+}
+
+function updateWires(dt)
+{
+  g_game.wires.forEach(wire => wire.update(dt));
 }
 
 function updateParticles(dt)
