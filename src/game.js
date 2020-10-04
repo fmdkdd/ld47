@@ -120,16 +120,13 @@ let StateMain = {
 
       // Glow layer
 
-      // pink #ff61fe #ffdeff
-      // blue #29dcfd #cff7ff
-
       const points = worm.points.flat();
 
       const glow = 0.5 * Math.sin(g_lastFrameTime * g_options.glowSpeed) + 1;
 
       ctxt.globalCompositeOperation = 'lighter';
       ctxt.filter = 'blur(5px)';
-      ctxt.strokeStyle = '#29dcfd';
+      ctxt.strokeStyle = g_colors['blue'][1];
       ctxt.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow);
       ctxt.beginPath();
       ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
@@ -140,7 +137,7 @@ let StateMain = {
 
       ctxt.globalCompositeOperation = 'source-over';
       ctxt.filter = 'none';
-      ctxt.strokeStyle = '#cff7ff';
+      ctxt.strokeStyle = g_colors['blue'][0];
       ctxt.lineWidth = 4;
       ctxt.beginPath();
       ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
@@ -530,7 +527,7 @@ function gameInit() {
 
   // Test loop node
   {
-    let node = new LoopNode(point(500, 500));
+    let node = new LoopNode(point(500, 500), 'orange');
     g_game.loopNodes.push(node);
   }
 
@@ -541,14 +538,14 @@ function gameInit() {
       point(1000, -50),
       point(1000, 50),
       point(-50, 20)
-    ]));
+    ], 'pink'));
 
     g_game.obstacles.push(new Obstacles([
       point(-50, -50),
       point(50, -50),
       point(10, 1000),
       point(-50, 1000)
-    ]));
+    ], 'blue'));
   }
 
   setState(StateMain);

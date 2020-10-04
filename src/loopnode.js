@@ -2,9 +2,10 @@
 
 class LoopNode
 {
-  constructor(pos)
+  constructor(pos, color)
   {
     this.pos = pos;
+    this.color = color;
   }
 
   update(dt)
@@ -13,7 +14,20 @@ class LoopNode
 
   render(ctx)
   {
-    ctx.fillStyle = 'grey';
+    const color = g_colors[this.color];
+
+    ctx.fillStyle = color[1];
+    //ctx.globalCompositeOperation = 'lighter';
+    ctx.filter = 'blur(5px)';
+
+    ctx.beginPath();
+    ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.fillStyle = color[0];
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.filter = 'none';
+
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
     ctx.fill();
