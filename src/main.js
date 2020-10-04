@@ -19,6 +19,7 @@ let g_options = {
   glowSpeed          : 0.002,
   glowIntensity      : 0.3,
   trainSpeed         : 0.01,
+  gridSpacing        : 100
 };
 
 let g_stats;
@@ -120,6 +121,7 @@ let StateMain = {
   },
 
   render(ctxt) {
+
     //drawGrid(ctxt);
 
     // Draw worms
@@ -362,17 +364,23 @@ function updateParticles(dt)
 
 function drawGrid(ctx)
 {
-  for (let y = 50; y < g_canvas.height; ++y)
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.stroke
+
+  for (let y = 0; y < g_canvas.height; y += g_options.gridSpacing)
   {
     ctx.moveTo(0, y);
     ctx.lineTo(g_canvas.width, y);
   }
 
-  for (let x = 50; x < g_canvas.width; ++x)
+  for (let x = 0; x < g_canvas.width; x += g_options.gridSpacing)
   {
     ctx.moveTo(x, 0);
     ctx.lineTo(x, g_canvas.height);
   }
+
+  ctx.stroke();
 }
 
 const BUTTON_STATE_UP   = false;
@@ -653,6 +661,7 @@ window.addEventListener('DOMContentLoaded', function(main) {
   renderOptions.add(g_options, "showWormPoints");
   renderOptions.add(g_options, "glowSpeed", 0, 0.01);
   renderOptions.add(g_options, "glowIntensity", 0, 1);
+  renderOptions.add(g_options, "gridSpacing", 0, 300);
 
   g_canvas.addEventListener('mousemove', onMouseMove);
   g_canvas.addEventListener('mousedown', onMouseDown);
