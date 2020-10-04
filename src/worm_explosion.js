@@ -44,19 +44,9 @@ class WormExplosion
       // Rotate
 
       const angle = this.angularSpeeds[i] * 0.001 * dt;
-      const cosa = Math.cos(angle);
-      const sina = Math.sin(angle);
 
-      const rot = (p) =>
-      {
-        return [
-          cosa * (p[0] - middle[0]) - sina * (p[1] - middle[1]) + middle[0],
-          sina * (p[0] - middle[0]) + cosa * (p[1] - middle[1]) + middle[1]
-        ];
-      };
-
-      seg[0] = rot(seg[0]);
-      seg[1] = rot(seg[1]);
+      seg[0] = rot(seg[0], middle, angle);
+      seg[1] = rot(seg[1], middle, angle);
     }
   }
 

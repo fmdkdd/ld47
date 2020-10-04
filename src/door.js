@@ -13,6 +13,8 @@ class Door
     this.openRatio = 0; // [0, 1]
     this.age = 0;
 
+    this.rot = 0;
+    this.height = 100;
     this.powered = true;
     this.anchorPos = vadd(this.pos, vmult(point(0, 1), openDistance * 1.55)); // HACK
   }
@@ -32,13 +34,15 @@ class Door
 
   points()
   {
+    const origin = point(0, 0);
+
     const points =
     [
-      [point(-10, 0), point(-10, 100), point(10, 100), point(10, 0)],
-      [point(-10, 0), point(-10, -100), point(10, -100), point(10, 0)]
+      [point(-10, 0), point(-10, this.height), point(10, this.height), point(10, 0)].map(p => rot(p, origin, this.rot)),
+      [point(-10, 0), point(-10, -this.height), point(10, -this.height), point(10, 0)].map(p => rot(p, origin, this.rot))
     ];
 
-    const dir = point(0, this.openRatio * this.openDistance);
+    const dir = rot(point(0, this.openRatio * this.openDistance), origin, this.rot);
     points[0] = points[0].map(p => vadd(vadd(p, this.pos), dir));
     points[1] = points[1].map(p => vsub(vadd(p, this.pos), dir));
 

@@ -72,3 +72,14 @@ function project_clamped(u, v) {
   const dot = dot_product(axis, u);
   return vmult(axis, clamp(dot, 0, vlength(v)));
 }
+
+function rot(point, origin, angle)
+{
+  const cosa = Math.cos(angle);
+  const sina = Math.sin(angle);
+
+  return [
+    cosa * (point[0] - origin[0]) - sina * (point[1] - origin[1]) + origin[0],
+    sina * (point[0] - origin[0]) + cosa * (point[1] - origin[1]) + origin[1]
+  ];
+}
