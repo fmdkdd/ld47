@@ -65,6 +65,23 @@ function drawPath(ctx, points, strokeColor, glowColor)
   ctx.moveTo(points[0][0], points[0][1]);
   ctx.curve(curvePoints, g_options.curveTension, g_options.curveSegments, false);
   ctx.stroke();
+
+  /*
+  if (drawHead)
+  {
+    const tip = points[points.length - 1];
+
+    const dir = vnorm(vsub(points[points.length - 2], tip));
+    const side1 = vadd(points[points.length - 2], vmult(vortho(dir), g_options.tipWidth));
+    const side2 = vsub(points[points.length - 2], vmult(vortho(dir), g_options.tipWidth));
+
+    ctx.beginPath();
+    ctx.moveTo(...side1);
+    ctx.lineTo(...tip);
+    ctx.lineTo(...side2);
+    ctx.fill()
+  }
+  */
 }
 
 function glow()

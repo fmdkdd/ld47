@@ -18,7 +18,7 @@ class LoopNode
 
     const color = g_colors[this.color];
 
-    if (g_options.glowEanbled)
+    if (g_options.glowEnabled)
     {
       ctx.fillStyle = color[1];
       //ctx.globalCompositeOperation = 'lighter';

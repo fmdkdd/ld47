@@ -39,6 +39,10 @@ function vmult(v, s) {
   return [v[0] * s, v[1] * s];
 }
 
+function vortho(v) {
+  return [v[1], v[0]];
+}
+
 function randomDir() {
   return vnorm(point(Math.random() - 0.5, Math.random() - 0.5));
 }
