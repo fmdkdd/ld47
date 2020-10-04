@@ -332,7 +332,7 @@ let StateDraggingWorm = {
 
 let StateGameover = {
   update(dt) {
-    if (g_mouse.wasReleased(0)) {
+    if (g_mouse.wasPressed(0)) {
       gameInit();
     }
   },
