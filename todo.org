@@ -18,3 +18,9 @@ Polish:
 Ideas:
 - Score by speed to finish level?
 - Less punitive: lives/reduce size of train instead of gameover
+- Sliding doors that shorten the worm length
+- Loop node to end level
+- Tiles that emit inert worms?
+- Tiles that emit new trains?
+- Colored trains act as keys for loop nodes
+- Loop nodes can require multiple keys/(same color/different colors)
