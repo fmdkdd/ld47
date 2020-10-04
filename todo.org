@@ -4,7 +4,8 @@ Florent:
 - [X] Gameover when train overflows tracks
 - [X] Color worm by danger
 - [ ] Forbid crossing own worm (to avoid shortcut bug?)
-- [ ] Check worm length when moving
+- [X] Check worm length when moving
+- [ ] SFX/MUSIC!!!
 
 Merwan:
 - [X] End-of-level nodes
@@ -13,6 +14,7 @@ Open:
 - [ ] Speedup/slowdown areas
 
 Polish:
+- [ ] Level transition
 - [ ] Slowdown effet on gameover (to understand cause of failure)
 - [ ] To make connection easier, maybe allow connection beyond the
   connectionDistance?
@@ -22,7 +24,6 @@ Ideas:
 - Score by speed to finish level?
 - Less punitive: lives/reduce size of train instead of gameover
 - Sliding doors that shorten the worm length
-- Loop node to end level
 - Tiles that emit inert worms?
 - Tiles that emit new trains?
 - Colored trains act as keys for loop nodes
