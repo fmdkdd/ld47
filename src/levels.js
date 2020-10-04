@@ -37,8 +37,8 @@ let g_levels = (function() {
     return o;
   }
 
-  function GoalNode(x, y, colorName) {
-    const n = makeEndLevelNode(point(x, y), colorName);
+  function GoalNode(x, y, radius, colorName) {
+    const n = makeEndLevelNode(point(x, y), radius, colorName);
     g_game.loopNodes.push(n);
     return n;
   }
@@ -58,7 +58,7 @@ let g_levels = (function() {
   return [
     function level0() {
       StraightWorm(200, 300, 18, 'x');
-      GoalNode(550, 300, 'blue');
+      GoalNode(550, 300, 10, 'blue');
 
       Wall([-50, -50,
             1000, -50,
@@ -87,7 +87,7 @@ let g_levels = (function() {
 
     function level1() {
       const w0 = RoundWorm(250, 300, 40, 20);
-      GoalNode(550, 300, 'blue');
+      GoalNode(550, 300, 10, 'blue');
       Train(w0.id);
 
       Wall([-50, -50,
@@ -117,7 +117,7 @@ let g_levels = (function() {
 
     function level2() {
       const w0 = RoundWorm(120, 300, 30, 20);
-      GoalNode(655, 295, 'blue');
+      GoalNode(655, 295, 10, 'blue');
       Train(w0.id);
 
       Wall([
@@ -224,7 +224,7 @@ let g_levels = (function() {
 
     function level3() {
       const w0 = RoundWorm(120, 300, 20, 20);
-      GoalNode(683, 293, 'blue');
+      GoalNode(683, 293, 10, 'blue');
       Train(w0.id);
 
       for (let i=0; i < 20; ++i) {
@@ -280,8 +280,8 @@ let g_levels = (function() {
     },
 
     function level4() {
-      const w0 = StraightWorm(120, 100, 15, 'y');
-      GoalNode(660, 483, 'blue');
+      StraightWorm(120, 100, 15, 'y');
+      GoalNode(660, 483, 10, 'blue');
 
       Dooro(200, 280, 30, 0.002, 'pink');
       Dooro(300, 330, 30, 0.004, 'pink');
