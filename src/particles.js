@@ -7,7 +7,7 @@ class ParticleSystem
     this.particles = particles;
   }
 
-  empty()
+  done()
   {
     return this.particles.length === 0;
   }

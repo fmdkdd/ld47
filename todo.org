@@ -9,6 +9,7 @@ Florent:
 
 Merwan:
 - [X] End-of-level nodes
+- [X] Collisions lead to game over
 
 Open:
 - [ ] Speedup/slowdown areas

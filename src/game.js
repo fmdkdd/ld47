@@ -4,11 +4,11 @@ let g_game = {
   objects: {},
   worms: [],
   trains: [],
-  particleSystems: [],
   loopNodes: [],
   obstacles: [],
   doors: [],
-  wires: []
+  wires: [],
+  animations: []
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +120,7 @@ let StateMain = {
     updateLoopNodes(dt);
     updateDoors(dt);
     updateWires(dt);
-    updateParticles(dt);
+    updateAnimations(dt);
   },
 
   render(ctxt) {
@@ -156,7 +156,7 @@ let StateMain = {
       g_game.loopNodes.forEach(node => node.render(ctxt));
       g_game.doors.forEach(door => door.render(ctxt));
       g_game.obstacles.forEach(obs => obs.render(ctxt));
-      g_game.particleSystems.forEach(system => system.render(ctxt));
+      g_game.animations.forEach(system => system.render(ctxt));
 
       renderTrains(ctxt);
     }
@@ -223,15 +223,21 @@ let StateDraggingWorm = {
           }
         }
       }
+    }
 
-      // Check obstacles
+    // Check obstacles
 
-      for (let obs of [...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors])
+    for (let w_i=0; w_i < g_game.worms.length; ++w_i) {
+      const worm = g_game.worms[w_i];
+
+      if ([...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors].some(obj => obj.hits(worm)))
       {
-        if (obs.hits(worm))
-        {
-          setState(StateGameover);
-        }
+        //setState(StateGameover);
+
+        g_game.worms.splice(w_i, 1);
+        --w_i;
+
+        g_game.animations.push(new WormExplosion(worm, 'blue'));
       }
     }
 
@@ -329,7 +335,7 @@ let StateDraggingWorm = {
     updateLoopNodes(dt);
     updateDoors(dt);
     updateWires(dt);
-    updateParticles(dt);
+    updateAnimations(dt);
   },
 
   render(ctxt) {
@@ -572,7 +578,7 @@ function gameInit() {
   g_game.objects = {};
   g_game.worms.length = 0;
   g_game.trains.length = 0;
-  g_game.particleSystems.length = 0;
+  g_game.animations.length = 0;
   g_game.loopNodes.length = 0;
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
@@ -673,10 +679,10 @@ function updateWires(dt)
   g_game.wires.forEach(wire => wire.update(dt));
 }
 
-function updateParticles(dt)
+function  updateAnimations(dt)
 {
-  g_game.particleSystems.forEach(system => system.update(dt));
-  g_game.particleSystems = g_game.particleSystems.filter(system => !system.empty());
+  g_game.animations.forEach(anim => anim.update(dt));
+  g_game.animations = g_game.animations.filter(anim => !anim.done());
 }
 
 function rotateArrayLeft(a, n) {

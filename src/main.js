@@ -174,8 +174,9 @@ function onMouseUp(event) {
   return false;
 }
 
+// TODO remove
 function onMouseWheel(event) {
-  g_game.particleSystems.push(makeExplosion([200, 200], 10));
+  g_game.animations.push(makeExplosion([200, 200], 10));
 
   event.preventDefault();
   return false;
