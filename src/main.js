@@ -12,7 +12,8 @@ let g_options = {
   grabDistance       : 30,
   splitDistance      : 10,
   showWormPoints     : false,
-  glowSpeed          : 0.002,
+  glowEnabled        : true,
+  glowSpeed          : 0.0025,
   glowIntensity      : 0.3,
   gridSpacing        : 100,
   trainSpeed         : 0.5,
@@ -204,6 +205,7 @@ window.addEventListener('DOMContentLoaded', function() {
   const renderOptions = gui.addFolder('Rendering');
   renderOptions.open();
   renderOptions.add(g_options, "showWormPoints");
+  renderOptions.add(g_options, "glowEnabled");
   renderOptions.add(g_options, "glowSpeed", 0, 0.01);
   renderOptions.add(g_options, "glowIntensity", 0, 1);
   renderOptions.add(g_options, "gridSpacing", 0, 300);

@@ -51,34 +51,3 @@ const OpenState =
     door.openRatio = 0.5 * Math.sin(door.age * door.openSpeed) + 0.5;
   }
 };
-
-function drawShape(ctx, points, colorName)
-{
-  const color = g_colors[colorName];
-
-  //
-
-  ctx.fillStyle = color[1];
-  //ctx.globalCompositeOperation = 'lighter';
-  ctx.filter = 'blur(5px)';
-
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; ++i)
-    ctx.lineTo(points[i][0], points[i][1]);
-  ctx.closePath();
-  ctx.fill();
-
-  //
-
-  ctx.fillStyle = color[0];
-  ctx.globalCompositeOperation = 'source-over';
-  ctx.filter = 'none';
-
-  ctx.beginPath();
-  ctx.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; ++i)
-    ctx.lineTo(points[i][0], points[i][1]);
-  ctx.closePath();
-  ctx.fill();
-}

@@ -12,29 +12,7 @@ class Obstacles
 
   render(ctx)
   {
-    const color = g_colors[this.color];
-
-    ctx.fillStyle = color[1];
-    //ctx.globalCompositeOperation = 'lighter';
-    ctx.filter = 'blur(5px)';
-
-    ctx.beginPath();
-    ctx.moveTo(this.points[0][0], this.points[0][1]);
-    for (let i = 1; i < this.points.length; ++i)
-      ctx.lineTo(this.points[i][0], this.points[i][1]);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = color[0];
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.filter = 'none';
-
-    ctx.beginPath();
-    ctx.moveTo(this.points[0][0], this.points[0][1]);
-    for (let i = 1; i < this.points.length; ++i)
-      ctx.lineTo(this.points[i][0], this.points[i][1]);
-    ctx.closePath();
-    ctx.fill();
+    drawShape(ctx, this.points, this.color);
   }
 
   hits(worm)

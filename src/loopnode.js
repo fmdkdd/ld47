@@ -14,15 +14,20 @@ class LoopNode
 
   render(ctx)
   {
+    // TODO draw func?
+
     const color = g_colors[this.color];
 
-    ctx.fillStyle = color[1];
-    //ctx.globalCompositeOperation = 'lighter';
-    ctx.filter = 'blur(5px)';
+    if (g_options.glowEanbled)
+    {
+      ctx.fillStyle = color[1];
+      //ctx.globalCompositeOperation = 'lighter';
+      ctx.filter = 'blur(5px)';
 
-    ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
-    ctx.fill();
+      ctx.beginPath();
+      ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
+      ctx.fill();
+    }
 
     ctx.fillStyle = color[0];
     ctx.globalCompositeOperation = 'source-over';
