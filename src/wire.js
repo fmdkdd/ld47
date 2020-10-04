@@ -14,7 +14,7 @@ class Wire
 
   render(ctx)
   {
-    const path =
+    /*const path =
     [
       this.from.anchorPos,
       point(this.from.anchorPos[0], this.to.anchorPos[1]),
@@ -35,6 +35,6 @@ class Wire
     ctx.lineTo(...path[2]);
     ctx.stroke();
 
-    ctx.restore();
+    ctx.restore();*/
   }
 }

@@ -23,7 +23,7 @@ class Grid
 
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#6f21ff';
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = 0.3;
 
     ctx.beginPath();
 

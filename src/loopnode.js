@@ -88,10 +88,10 @@ class LoopNode
 
       const progress = (this.age % dur) / dur;
 
-      ctx.lineWidth = 1;
-      ctx.globalAlpha = 0.5;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.8;
       ctx.strokeStyle = '#DCDCDC';
-      ctx.setLineDash([1, 15]);
+      ctx.setLineDash([1, 16]);
       ctx.beginPath();
 
       if (progress < 0.5)
