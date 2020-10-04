@@ -44,6 +44,37 @@ class Door
 
     return points;
   }
+
+  hits(worm)
+  {
+    const check = pts =>
+    {
+      for (let i = 1; i < worm.points.length; ++i)
+      {
+        const wormA = worm.points[i - 1];
+        const wormB = worm.points[i];
+
+        for (let j = 1; j < pts.length; ++j)
+        {
+          const obsA = pts[j - 1];
+          const obsB = pts[j];
+
+          const hit = Intersects.lineLine(
+            wormA[0], wormA[1], wormB[0], wormB[1],
+            obsA[0], obsA[1], obsB[0], obsB[1]
+          );
+
+          if (hit)
+            return true;
+        }
+      }
+
+      return false;
+    };
+
+    const doorPoints = this.points();
+    return check(doorPoints[0]) || check(doorPoints[1]);
+  }
 }
 
 const OpenState =

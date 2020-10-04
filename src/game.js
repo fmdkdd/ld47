@@ -225,11 +225,12 @@ let StateDraggingWorm = {
       }
 
       // Check obstacles
-      for (let obs of g_game.obstacles)
+
+      for (let obs of [...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors])
       {
         if (obs.hits(worm))
         {
-          console.log('collision');
+          setState(StateGameover);
         }
       }
     }
