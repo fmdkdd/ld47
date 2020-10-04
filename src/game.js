@@ -383,7 +383,7 @@ let StateDraggingWorm = {
 let StateLevelOver = {
   update(dt) {
     if (g_mouse.wasPressed(0)) {
-      gameInit();
+      loadLevel(++g_currentLevel);
     }
   },
 
@@ -576,8 +576,7 @@ function createTrain(wormId) {
   return train;
 }
 
-function gameInit() {
-  // Trash state
+function resetGameState() {
   g_game.objects = {};
   g_game.worms.length = 0;
   g_game.trains.length = 0;
@@ -586,6 +585,22 @@ function gameInit() {
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
   g_game.wires.length = 0;
+}
+
+function createStraightWorm(x, y, segments, dir) {
+  let points = [];
+  for (let i=0; i < segments; ++i) {
+    const d = i * g_options.samplingDistance;
+    if (dir === 'x')
+      points.push(point(x + d, y));
+    else
+      points.push(point(x, y + d));
+  }
+  return createWorm(points);
+}
+
+function testLevel() {
+  resetGameState();
 
   g_game.grid = new Grid();
 
@@ -595,14 +610,7 @@ function gameInit() {
   g_game.worms.push(createRoundWorm(500, 200, 20, 9));
 
   // Create a straight worm
-  {
-    const segments = 9;
-    const points = [];
-    for (let i=0; i < segments; ++i) {
-      points.push(point(400, 200 + i * 20));
-    }
-    g_game.worms.push(createWorm(points));
-  }
+  g_game.worms.push(createStraightWorm(400, 200, 9));
 
   // Add a train to round worm
   g_game.trains.push(createTrain(g_game.worms[0].id));
@@ -667,6 +675,10 @@ function gameInit() {
   }
 
   setState(StateMain);
+}
+
+function gameInit() {
+  loadLevel(g_currentLevel);
 }
 
 function updateLoopNodes(dt)

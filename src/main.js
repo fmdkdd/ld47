@@ -139,6 +139,9 @@ function onMouseDown(event) {
   if (event.button === 0) {
     g_mouse.buttons[0] = BUTTON_STATE_DOWN;
   }
+  else if (event.button === 2) {
+    console.log(g_mouse.x, g_mouse.y);
+  }
 
   event.preventDefault();
   return false;
@@ -161,6 +164,10 @@ function onMouseWheel(event) {
   return false;
 }
 
+function onContextMenu(event) {
+  event.preventDefault();
+  return false;
+}
 
 window.addEventListener('DOMContentLoaded', function() {
   g_canvas = document.querySelector('canvas');
@@ -195,10 +202,11 @@ window.addEventListener('DOMContentLoaded', function() {
   renderOptions.add(g_options, "glowIntensity", 0, 1);
   renderOptions.add(g_options, "gridSpacing", 0, 300);
 
-  g_canvas.addEventListener('mousemove', onMouseMove);
-  g_canvas.addEventListener('mousedown', onMouseDown);
-  g_canvas.addEventListener('mouseup',   onMouseUp);
-  g_canvas.addEventListener('mousewheel',onMouseWheel);
+  g_canvas.addEventListener('mousemove',   onMouseMove);
+  g_canvas.addEventListener('mousedown',   onMouseDown);
+  g_canvas.addEventListener('mouseup',     onMouseUp);
+  g_canvas.addEventListener('mousewheel',  onMouseWheel);
+  g_canvas.addEventListener('contextmenu', onContextMenu);
 
   g_canvas.width = CANVAS_WIDTH;
   g_canvas.height= CANVAS_HEIGHT;

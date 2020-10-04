@@ -4,6 +4,15 @@ function point(x, y) {
   return [x, y];
 }
 
+function points(...coords) {
+  assert((coords.length % 2) === 0);
+  let p = [];
+  for (let i=1, l=coords.length; i < l; i += 2) {
+    p.push(point(coords[i-1], coords[i]));
+  }
+  return p;
+}
+
 function dist(a, b) {
   const dx = b[0] - a[0];
   const dy = b[1] - a[1];
