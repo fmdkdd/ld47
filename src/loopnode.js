@@ -1,3 +1,5 @@
+'use strict';
+
 class LoopNode
 {
   constructor(pos)
@@ -25,7 +27,7 @@ class LoopNode
     // Cast an horizontal ray from the node's position.
     // Odd number of intersections = the node is surrounded
 
-    let ray = [this.pos[0], this.pos[1], this.pos[0] + 10000, this.pos[1]]
+    let ray = [this.pos[0], this.pos[1], this.pos[0] + 10000, this.pos[1]];
 
     let hits = 0;
 

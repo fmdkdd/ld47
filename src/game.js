@@ -321,8 +321,29 @@ let StateDraggingWorm = {
   },
 };
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// StateGameover
+
+let StateGameover = {
+  update(dt) {
+    if (g_mouse.wasReleased(0)) {
+      gameInit();
+    }
+  },
+
+  render(ctxt) {
+    StateMain.render(ctxt);
+    ctxt.fillStyle = 'rgba(0,0,0,0.8)';
+    ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+    ctxt.fillStyle = "#fff";
+    ctxt.font = '48px sans-serif';
+    ctxt.fillText("Click to retry", 300, 300);
+  },
+};
+
 function getTrainScreenPos(train) {
-  const worm = g_game.worms[train.wormIndex]
+  const worm = g_game.worms[train.wormIndex];
   const path = worm.points;
   const a = path[Math.trunc(train.pos) + 0];
   const b = path[Math.trunc(train.pos) + 1];
@@ -378,7 +399,7 @@ function wormTail(worm) {
 
 function wormLength(worm) {
   let length = 0;
-  const path = worm.points
+  const path = worm.points;
   for (let i = 1; i < path.length; ++i) {
     length += dist(path[i - 1], path[i]);
   }
@@ -401,6 +422,10 @@ function getTrainsOnWorm(worm) {
 }
 
 function gameInit() {
+  g_game.worms.length = 0;
+  g_game.trains.length = 0;
+  g_game.loopNodes.length = 0;
+
   // Create a round worm
   {
     const center_x = 300;
@@ -438,6 +463,7 @@ function gameInit() {
     let train = {
       wormIndex: 0,
       pos: 0,
+      hasCrashed: false,
       speed: g_options.trainSpeed,
     };
     g_game.trains.push(train);
@@ -445,7 +471,7 @@ function gameInit() {
 
   // Test loop node
   {
-    let node = new LoopNode(point(500, 500))
+    let node = new LoopNode(point(500, 500));
     g_game.loopNodes.push(node);
   }
 
@@ -461,8 +487,11 @@ function rotateArrayLeft(a, n) {
 
 function updateTrains(dt) {
   for (let train of g_game.trains) {
+    if (train.hasCrashed)
+      continue;
+
     const worm = g_game.worms[train.wormIndex];
-    const path = worm.points
+    const path = worm.points;
     const max_pos = path.length - 1;
     // Normalize speed by segment length so that the train
     // always advances at the same speed regardless of segment length
@@ -474,8 +503,8 @@ function updateTrains(dt) {
         train.pos -= max_pos;
       }
       else {
-        // TODO
-        console.log("Crash!");
+        train.hasCrashed = true;
+        setState(StateGameover);
       }
     }
   }
@@ -483,6 +512,9 @@ function updateTrains(dt) {
 
 function renderTrains(ctxt) {
   for (const train of g_game.trains) {
+    if (train.hasCrashed)
+      continue;
+
     const worm = g_game.worms[train.wormIndex];
     ctxt.fillStyle = '#b00';
 

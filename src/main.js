@@ -50,7 +50,7 @@ function drawGrid(ctx)
 {
   ctx.lineWidth = 1;
   ctx.beginPath();
-  ctx.stroke
+  ctx.stroke();
 
   for (let y = 0; y < g_canvas.height; y += g_options.gridSpacing)
   {
@@ -187,7 +187,7 @@ function onKeyUp(event) {
 }
 
 
-window.addEventListener('DOMContentLoaded', function(main) {
+window.addEventListener('DOMContentLoaded', function() {
   g_canvas = document.querySelector('canvas');
 
   g_stats = new Stats();
