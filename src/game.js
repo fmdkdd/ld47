@@ -153,15 +153,15 @@ let StateMain = {
           ctxt.fillText(i, seg[0]+3, seg[1]+3);
         }
       }
-
-      g_game.wires.forEach(wire => wire.render(ctxt));
-      g_game.loopNodes.forEach(node => node.render(ctxt));
-      g_game.doors.forEach(door => door.render(ctxt));
-      g_game.obstacles.forEach(obs => obs.render(ctxt));
-      g_game.animations.forEach(system => system.render(ctxt));
-
-      renderTrains(ctxt);
     }
+
+    g_game.wires.forEach(wire => wire.render(ctxt));
+    g_game.loopNodes.forEach(node => node.render(ctxt));
+    g_game.doors.forEach(door => door.render(ctxt));
+    g_game.obstacles.forEach(obs => obs.render(ctxt));
+    g_game.animations.forEach(system => system.render(ctxt));
+
+    renderTrains(ctxt);
 
     // Draw interaction points
     if (this.grabbingPoint !== null) {
