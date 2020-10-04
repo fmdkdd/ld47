@@ -31,6 +31,10 @@ function vadd(u, v) {
   return [u[0] + v[0], u[1] + v[1]];
 }
 
+function vsub(u, v) {
+  return [u[0] - v[0], u[1] - v[1]];
+}
+
 function vmult(v, s) {
   return [v[0] * s, v[1] * s];
 }

@@ -10,28 +10,6 @@ class Obstacles
   {
   }
 
-/*const glow = 0.5 * Math.sin(g_lastFrameTime * g_options.glowSpeed) + 1;
-
-      ctxt.globalCompositeOperation = 'lighter';
-      ctxt.filter = 'blur(5px)';
-      ctxt.strokeStyle = g_colors['blue'][1];
-      ctxt.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow);
-      ctxt.beginPath();
-      ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-      ctxt.curve(points, g_options.curveTension, g_options.curveSegments, false);
-      ctxt.stroke();
-
-      // Core layer
-
-      ctxt.globalCompositeOperation = 'source-over';
-      ctxt.filter = 'none';
-      ctxt.strokeStyle = g_colors['blue'][0];
-      ctxt.lineWidth = 4;
-      ctxt.beginPath();
-      ctxt.moveTo(worm.points[0][0], worm.points[0][1]);
-      ctxt.curve(points, g_options.curveTension, g_options.curveSegments, false);
-      ctxt.stroke();
-*/
   render(ctx)
   {
     const color = g_colors[this.color];

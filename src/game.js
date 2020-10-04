@@ -6,7 +6,8 @@ let g_game = {
   trains: [],
   particleSystems: [],
   loopNodes: [],
-  obstacles: []
+  obstacles: [],
+  doors: [],
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,6 +107,7 @@ let StateMain = {
     updateTrains(dt);
 
     updateLoopNodes(dt);
+    updateDoors(dt);
     updateParticles(dt);
   },
 
@@ -159,6 +161,7 @@ let StateMain = {
 
       g_game.particleSystems.forEach(system => system.render(ctxt));
       g_game.loopNodes.forEach(node => node.render(ctxt));
+      g_game.doors.forEach(door => door.render(ctxt));
       g_game.obstacles.forEach(obs => obs.render(ctxt));
 
       renderTrains(ctxt);
@@ -304,6 +307,7 @@ let StateDraggingWorm = {
     updateTrains(dt);
 
     updateLoopNodes(dt);
+    updateDoors(dt);
     updateParticles(dt);
   },
 
@@ -504,6 +508,8 @@ function gameInit() {
   g_game.trains.length = 0;
   g_game.particleSystems.length = 0;
   g_game.loopNodes.length = 0;
+  g_game.obstacles.length = 0;
+  g_game.doors.length = 0;
 
   // Round worms
   g_game.worms.push(createRoundWorm(300, 300, 30, 9));
@@ -548,7 +554,28 @@ function gameInit() {
     ], 'blue'));
   }
 
+  // Door
+  {
+    g_game.doors.push(new Door(point(100, 400), 50, 0.001, 'pink'));
+  }
+
   setState(StateMain);
+}
+
+function updateLoopNodes(dt)
+{
+  g_game.loopNodes.forEach(node => node.update(dt));
+}
+
+function updateDoors(dt)
+{
+  g_game.doors.forEach(node => node.update(dt));
+}
+
+function updateParticles(dt)
+{
+  g_game.particleSystems.forEach(system => system.update(dt));
+  g_game.particleSystems = g_game.particleSystems.filter(system => !system.empty());
 }
 
 function rotateArrayLeft(a, n) {

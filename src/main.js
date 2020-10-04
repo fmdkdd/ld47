@@ -35,17 +35,6 @@ function setState(state) {
   g_CurrentState = state;
 }
 
-function updateLoopNodes(dt)
-{
-  g_game.loopNodes.forEach(node => node.update(dt));
-}
-
-function updateParticles(dt)
-{
-  g_game.particleSystems.forEach(system => system.update(dt));
-  g_game.particleSystems = g_game.particleSystems.filter(system => !system.empty());
-}
-
 function drawGrid(ctx)
 {
   ctx.lineWidth = 1;
