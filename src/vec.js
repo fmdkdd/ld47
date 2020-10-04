@@ -1,3 +1,5 @@
+'use strict';
+
 function point(x, y) {
   return [x, y];
 }
@@ -35,4 +37,21 @@ function vmult(v, s) {
 
 function randomDir() {
   return vnorm(point(Math.random() - 0.5, Math.random() - 0.5));
+}
+
+function lerp(a, b, dt) {
+  return a*dt + (1-dt) * b;
+}
+
+function clamp(x, a, b) {
+  if (x < a) return a;
+  if (x > b) return b;
+  return x;
+}
+
+// Return a vector W, result of U projected on V and clamped to V
+function project_clamped(u, v) {
+  const axis = vnorm(v);
+  const dot = dot_product(axis, u);
+  return vmult(axis, clamp(dot, 0, vlength(v)));
 }
