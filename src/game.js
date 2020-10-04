@@ -6,6 +6,7 @@ let g_game = {
   trains: [],
   particleSystems: [],
   loopNodes: [],
+  obstacles: []
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,6 +162,7 @@ let StateMain = {
 
       g_game.particleSystems.forEach(system => system.render(ctxt));
       g_game.loopNodes.forEach(node => node.render(ctxt));
+      g_game.obstacles.forEach(obs => obs.render(ctxt));
 
       renderTrains(ctxt);
     }
@@ -209,6 +211,15 @@ let StateDraggingWorm = {
         if (d < closestTailDistance) {
           closestTailDistance = d;
           closestWormToConnect = worm;
+        }
+      }
+
+      // Check obstacles
+      for (let obs of g_game.obstacles)
+      {
+        if (obs.hits(worm))
+        {
+          console.log('collision');
         }
       }
     }
@@ -521,6 +532,23 @@ function gameInit() {
   {
     let node = new LoopNode(point(500, 500));
     g_game.loopNodes.push(node);
+  }
+
+  // Obstacles
+  {
+    g_game.obstacles.push(new Obstacles([
+      point(-50, -50),
+      point(1000, -50),
+      point(1000, 50),
+      point(-50, 20)
+    ]));
+
+    g_game.obstacles.push(new Obstacles([
+      point(-50, -50),
+      point(50, -50),
+      point(10, 1000),
+      point(-50, 1000)
+    ]));
   }
 
   setState(StateMain);
