@@ -288,13 +288,15 @@ let StateDraggingWorm = {
       }
     }
     else if (g_mouse.wasReleased(0)) {
+      // Add points at mouse position
+      this.worm.points.push(pmouse);
+
       if (closestConnect.distance < g_options.connectionDistance) {
         // Save train screen positions to adjust it later
         let savedTrainsScreenPos = [];
         for (let train of getTrainsOnWorm(closestConnect.worm)) {
           savedTrainsScreenPos.push(getTrainScreenPos(train));
         }
-
 
         if (this.worm === closestConnect.worm) {
           // Trying to connect to one's own tail, close the worm instead
@@ -349,6 +351,13 @@ let StateDraggingWorm = {
       ctxt.arc(this.connectingPoint[0], this.connectingPoint[1],
                5, 0, 2*Math.PI);
       ctxt.stroke();
+    }
+
+    if (g_options.showWormLength) {
+      ctxt.font = '20px sans';
+      const staticLength = this.worm.length;
+      const dynamicLength = wormLength(this.worm);
+      ctxt.fillText(`${staticLength}\n${dynamicLength}`, 0, 20);
     }
   },
 
@@ -439,6 +448,18 @@ function wormLength(worm) {
   for (let i = 1; i < path.length; ++i) {
     length += dist(path[i - 1], path[i]);
   }
+
+  // If we are currently dragging this worm, we need to account for the
+  // head->mouse segment
+  //
+  // FIXME: if the head->mouse segment is shortened by moving the mouse into the
+  // head after the tail has been popped off, the total length will be shorter
+  // than the static length.  However, the static length will be restored
+  // when sampling new points.
+  if (g_CurrentState === StateDraggingWorm && worm === StateDraggingWorm.worm) {
+    length += dist(g_mouse.pos(), wormHead(worm));
+  }
+
   return length;
 }
 

@@ -5,18 +5,23 @@ const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
 
 let g_options = {
+  // Curve sampling
   samplingDistance   : 10,
   curveTension       : 0.5,
   curveSegments      : 10,
+  // Controls
   connectionDistance : 10,
   grabDistance       : 30,
   splitDistance      : 10,
+  trainSpeed         : 0.5,
+  // Debug
   showWormPoints     : false,
+  showWormLength     : false,
+  // Rendering
   glowEnabled        : true,
   glowSpeed          : 0.0025,
   glowIntensity      : 0.3,
   gridSpacing        : 100,
-  trainSpeed         : 0.5,
 };
 
 let g_stats;
@@ -169,7 +174,7 @@ function onMouseUp(event) {
   return false;
 }
 
-function onKeyUp(event) {
+function onMouseWheel(event) {
   g_game.particleSystems.push(makeExplosion([200, 200], 10));
 
   event.preventDefault();
@@ -200,8 +205,11 @@ window.addEventListener('DOMContentLoaded', function() {
       train.speed = v;
   });
 
+  const debugOptions = gui.addFolder('Debug');
+  debugOptions.add(g_options, "showWormPoints");
+  debugOptions.add(g_options, "showWormLength");
+
   const renderOptions = gui.addFolder('Rendering');
-  renderOptions.add(g_options, "showWormPoints");
   renderOptions.add(g_options, "glowEnabled");
   renderOptions.add(g_options, "glowSpeed", 0, 0.01);
   renderOptions.add(g_options, "glowIntensity", 0, 1);
@@ -210,7 +218,7 @@ window.addEventListener('DOMContentLoaded', function() {
   g_canvas.addEventListener('mousemove', onMouseMove);
   g_canvas.addEventListener('mousedown', onMouseDown);
   g_canvas.addEventListener('mouseup',   onMouseUp);
-  g_canvas.addEventListener('mousewheel',     onKeyUp);
+  g_canvas.addEventListener('mousewheel',onMouseWheel);
 
   g_canvas.width = CANVAS_WIDTH;
   g_canvas.height= CANVAS_HEIGHT;
