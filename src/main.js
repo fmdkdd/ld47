@@ -41,27 +41,6 @@ function setState(state) {
   g_CurrentState = state;
 }
 
-function drawGrid(ctx)
-{
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.stroke();
-
-  for (let y = 0; y < g_canvas.height; y += g_options.gridSpacing)
-  {
-    ctx.moveTo(0, y);
-    ctx.lineTo(g_canvas.width, y);
-  }
-
-  for (let x = 0; x < g_canvas.width; x += g_options.gridSpacing)
-  {
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, g_canvas.height);
-  }
-
-  ctx.stroke();
-}
-
 const BUTTON_STATE_UP   = false;
 const BUTTON_STATE_DOWN = true;
 

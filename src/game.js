@@ -8,7 +8,8 @@ let g_game = {
   obstacles: [],
   doors: [],
   wires: [],
-  animations: []
+  animations: [],
+  grid: null
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,11 +122,12 @@ let StateMain = {
     updateDoors(dt);
     updateWires(dt);
     updateAnimations(dt);
+    g_game.grid.update(dt);
   },
 
   render(ctxt) {
 
-    //drawGrid(ctxt);
+    g_game.grid.render(ctxt);
 
     // Draw worms
     for (let w_i=0, len=g_game.worms.length; w_i < len; ++w_i) {
@@ -336,6 +338,7 @@ let StateDraggingWorm = {
     updateDoors(dt);
     updateWires(dt);
     updateAnimations(dt);
+    g_game.grid.update(dt);
   },
 
   render(ctxt) {
@@ -583,6 +586,8 @@ function gameInit() {
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
   g_game.wires.length = 0;
+
+  g_game.grid = new Grid();
 
   // Round worms
   g_game.worms.push(createRoundWorm(300, 300, 30, 9));
