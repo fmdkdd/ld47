@@ -562,6 +562,26 @@ function gameInit() {
 
   // Obstacles
   {
+    /*{
+      const wave = [];
+      for (let i = 0; i < 100; ++i)
+        wave.push(point(i * 10, 200 + Math.sin(i * 0.2) * 50))
+      wave.push(point(1000, -100));
+      wave.push(point(0, -100));
+
+      g_game.obstacles.push(new Obstacles(wave, 'orange'));
+    }
+
+    {
+      const wave = [];
+      for (let i = 0; i < 100; ++i)
+        wave.push(point(i * 10, 300 + Math.sin(i * 0.2) * 50))
+      wave.push(point(1000, 1100));
+      wave.push(point(0, 1100));
+
+      g_game.obstacles.push(new Obstacles(wave, 'orange'));
+    }*/
+
     g_game.obstacles.push(new Obstacles([
       point(-50, -50),
       point(1000, -50),
@@ -577,12 +597,12 @@ function gameInit() {
     ], 'blue'));
   }
 
-  // Doors
+  // Triggered door
   {
     const door = new Door(point(600, 400), 50, 0.001, 'pink');
     g_game.doors.push(door);
 
-    const node = new LoopNode(point(300, 400), 'pink');
+    const node = new LoopNode(point(300, 450), 'pink');
     g_game.loopNodes.push(node);
 
     const wire = new Wire(node, door);

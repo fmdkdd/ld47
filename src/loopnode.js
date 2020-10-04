@@ -8,6 +8,7 @@ class LoopNode
     this.color = color;
 
     this.enabled = false;
+    this.anchorPos = this.pos;
   }
 
   update(dt)

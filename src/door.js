@@ -14,6 +14,7 @@ class Door
     this.age = 0;
 
     this.powered = true;
+    this.anchorPos = vadd(this.pos, vmult(point(0, 1), openDistance * 1.55)); // HACK
   }
 
   update(dt)
