@@ -6,6 +6,7 @@ let g_game = {
   worms: [],
   trains: [],
   particleSystems: [],
+  loopNodes: []
 };
 
 let g_options = {
@@ -77,6 +78,15 @@ let StateMain = {
           }
         }
       }
+
+      // Check node loops
+      for (let node of g_game.loopNodes)
+      {
+        if (node.isSurrounded(worm))
+        {
+          console.log('surrounded');
+        }
+      }
     }
 
     this.grabbingPoint = null;
@@ -117,6 +127,7 @@ let StateMain = {
       }
     }
 
+    updateLoopNodes(dt);
     updateParticles(dt);
   },
 
@@ -171,7 +182,8 @@ let StateMain = {
         }
       }
 
-      g_game.particleSystems.forEach(system => system.draw(ctxt));
+      g_game.particleSystems.forEach(system => system.render(ctxt));
+      g_game.loopNodes.forEach(node => node.render(ctxt));
     }
 
     // Draw interaction points
@@ -336,6 +348,7 @@ let StateDraggingWorm = {
       setState(StateMain);
     }
 
+    updateLoopNodes(dt);
     updateParticles(dt);
   },
 
@@ -366,6 +379,11 @@ let StateDraggingWorm = {
     this.connectingPoint = null;
   },
 };
+
+function updateLoopNodes(dt)
+{
+  g_game.loopNodes.forEach(node => node.update(dt));
+}
 
 function updateParticles(dt)
 {
@@ -507,6 +525,12 @@ function init() {
       speed: g_options.trainSpeed,
     };
     g_game.trains.push(train);
+  }
+
+  // Test loop node
+  {
+    let node = new LoopNode(point(500, 500))
+    g_game.loopNodes.push(node);
   }
 
   setState(StateMain);

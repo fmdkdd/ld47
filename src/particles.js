@@ -36,7 +36,7 @@ class ParticleSystem
     });
   }
 
-  draw(ctx)
+  render(ctx)
   {
     this.particles.forEach(p =>
     {
