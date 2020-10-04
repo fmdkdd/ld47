@@ -22,7 +22,8 @@ let g_stats;
 
 let g_canvas;
 let g_ctxt;
-let g_lastFrameTime = -1;
+let g_lastFrameTime = 0;
+let g_updateClock = 0;
 
 let g_CurrentState = null;
 
@@ -117,27 +118,12 @@ function debugDrawLine(a, b) {
 }
 
 function update(dt) {
-  g_CurrentState.update(dt);
-
-  // Update trains
-  for (let train of g_game.trains) {
-    const worm = g_game.worms[train.wormIndex];
-    const path = worm.points
-    const max_pos = path.length - 1;
-    // Normalize speed by segment length so that the train
-    // always advances at the same speed regardless of segment length
-    const a = path[Math.trunc(train.pos) + 1];
-    const b = path[Math.trunc(train.pos) + 0];
-    train.pos += train.speed / dist(a, b);
-    if (train.pos >= max_pos) {
-      if (isWormClosed(worm)) {
-        train.pos -= max_pos;
-      }
-      else {
-        // TODO
-        console.log("Crash!");
-      }
-    }
+  // Fixed timestep
+  const timestep = 5;
+  g_updateClock += dt;
+  while (g_updateClock >= timestep) {
+    g_updateClock -= timestep;
+    g_CurrentState.update(timestep);
   }
 }
 
@@ -145,23 +131,12 @@ function render(ctxt) {
   ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   g_CurrentState.render(ctxt);
-
-  // Draw trains
-  for (const train of g_game.trains) {
-    const worm = g_game.worms[train.wormIndex];
-    ctxt.fillStyle = '#b00';
-
-    const pos = getTrainScreenPos(train);
-    ctxt.beginPath();
-    ctxt.arc(pos[0], pos[1], 6, 0, Math.PI*2);
-    ctxt.fill();
-  }
 }
 
 function mainLoop(frameTime) {
   g_stats.begin();
 
-  const dt = frameTime - g_lastFrameTime;
+  const dt = g_lastFrameTime > 0 ? frameTime - g_lastFrameTime : 0;
   g_lastFrameTime = frameTime;
 
   g_ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);

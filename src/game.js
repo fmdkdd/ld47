@@ -11,6 +11,9 @@ let g_game = {
 // StateMain
 
 let StateMain = {
+  grabbingPoint: null,
+  splittingPoint: null,
+
   update(dt) {
     // Pick point on worm closest to mouse
     const pmouse = g_mouse.pos();
@@ -98,6 +101,8 @@ let StateMain = {
       }
     }
 
+    updateTrains(dt);
+
     updateLoopNodes(dt);
     updateParticles(dt);
   },
@@ -155,6 +160,8 @@ let StateMain = {
 
       g_game.particleSystems.forEach(system => system.render(ctxt));
       g_game.loopNodes.forEach(node => node.render(ctxt));
+
+      renderTrains(ctxt);
     }
 
     // Draw interaction points
@@ -279,6 +286,8 @@ let StateDraggingWorm = {
 
       setState(StateMain);
     }
+
+    updateTrains(dt);
 
     updateLoopNodes(dt);
     updateParticles(dt);
@@ -447,5 +456,39 @@ function rotateArrayLeft(a, n) {
   while (n-- > 0) {
     let x = a.shift();
     a.push(x);
+  }
+}
+
+function updateTrains(dt) {
+  for (let train of g_game.trains) {
+    const worm = g_game.worms[train.wormIndex];
+    const path = worm.points
+    const max_pos = path.length - 1;
+    // Normalize speed by segment length so that the train
+    // always advances at the same speed regardless of segment length
+    const a = path[Math.trunc(train.pos) + 1];
+    const b = path[Math.trunc(train.pos) + 0];
+    train.pos += train.speed / dist(a, b);
+    if (train.pos >= max_pos) {
+      if (isWormClosed(worm)) {
+        train.pos -= max_pos;
+      }
+      else {
+        // TODO
+        console.log("Crash!");
+      }
+    }
+  }
+}
+
+function renderTrains(ctxt) {
+  for (const train of g_game.trains) {
+    const worm = g_game.worms[train.wormIndex];
+    ctxt.fillStyle = '#b00';
+
+    const pos = getTrainScreenPos(train);
+    ctxt.beginPath();
+    ctxt.arc(pos[0], pos[1], 6, 0, Math.PI*2);
+    ctxt.fill();
   }
 }
