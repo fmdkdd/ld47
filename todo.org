@@ -2,13 +2,15 @@ Florent:
 - [X] Adjust train positions after merging worms
 - [X] Make train move with uniform speed regardless of sampling
 - [X] Gameover when train overflows tracks
+- [X] Color worm by danger
 - [ ] Forbid crossing own worm (to avoid shortcut bug?)
-- [ ] Color worm by danger
+- [ ] Check worm length when moving
 
 Open:
 - [ ] Speedup/slowdown areas
 
 Polish:
+- [ ] Slowdown effet on gameover (to understand cause of failure)
 - [ ] To make connection easier, maybe allow connection beyond the
   connectionDistance?
 - [ ] Small gap when rendering closed worms

@@ -21,12 +21,18 @@ let StateMain = {
   update(dt) {
     // Pick point on worm closest to mouse
     const pmouse = g_mouse.pos();
-    let closestSplitPointDistance = Number.MAX_VALUE;
-    let closestWormToSplit = null;
-    let closestSplittingPoint = null;
-    let closestSplittingPointIndex = 0;
-    let closestHeadDistance = Number.MAX_VALUE;
-    let closestWormToGrab = null;
+    let closestSplit = {
+      distance: Number.MAX_VALUE,
+      worm: null,
+      point: null,
+      pointIndex: 0,
+    };
+    let closestGrab = {
+      distance: Number.MAX_VALUE,
+      worm: null,
+      tailGrab: false,
+      point: null,
+    };
 
     for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
       const worm = g_game.worms[w_i];
@@ -39,20 +45,30 @@ let StateMain = {
           const proj = vadd(p0, project_clamped(vec(p0, pmouse), vec(p0, p1)));
 
           const d = dist(proj, pmouse);
-          if (d < closestSplitPointDistance) {
-            closestSplitPointDistance = d;
-            closestSplittingPoint = proj;
-            closestWormToSplit = worm;
-            closestSplittingPointIndex = p_i+1;
+          if (d < closestSplit.distance) {
+            closestSplit.distance = d;
+            closestSplit.worm = worm;
+            closestSplit.point = proj;
+            closestSplit.pointIndex = p_i+1;
           }
         }
       } else {
-        // Find closest head to grab
-        {
-          const d = dist(wormHead(worm), pmouse);
-          if (d < closestHeadDistance) {
-            closestHeadDistance = d;
-            closestWormToGrab = worm;
+        // Find head to grab
+        const d = dist(wormHead(worm), pmouse);
+        if (d < closestGrab.distance) {
+          closestGrab.distance = d;
+          closestGrab.worm = worm;
+          closestGrab.tailGrab = false;
+          closestGrab.point = wormHead(worm);
+        }
+        // If worm is inert, we can also grab the tail
+        if (getTrainsOnWorm(worm).length === 0) {
+          const d = dist(wormTail(worm), pmouse);
+          if (d < closestGrab.distance) {
+            closestGrab.distance = d;
+            closestGrab.worm = worm;
+            closestGrab.tailGrab = true;
+            closestGrab.point = wormTail(worm);
           }
         }
       }
@@ -62,36 +78,39 @@ let StateMain = {
     this.splittingPoint = null;
 
     if (g_mouse.isUp(0)) {
-      if (closestHeadDistance < g_options.grabDistance) {
-        this.grabbingPoint = wormHead(closestWormToGrab);
+      if (closestGrab.distance < g_options.grabDistance) {
+        this.grabbingPoint = closestGrab.point;
       }
-      else if (closestSplitPointDistance < g_options.splitDistance) {
-        this.splittingPoint = closestSplittingPoint.slice();
+      else if (closestSplit.distance < g_options.splitDistance) {
+        this.splittingPoint = closestSplit.point.slice();
       }
     } else if (g_mouse.wasPressed(0)) {
-      if (closestHeadDistance < g_options.grabDistance) {
-        StateDraggingWorm.worm = closestWormToGrab;
+      if (closestGrab.distance < g_options.grabDistance) {
+        StateDraggingWorm.worm = closestGrab.worm;
+        if (closestGrab.tailGrab) {
+          closestGrab.worm.points.reverse();
+        }
         setState(StateDraggingWorm);
-      } else if (closestSplitPointDistance < g_options.splitDistance) {
+      } else if (closestSplit.distance < g_options.splitDistance) {
         // Save train screen positions to adjust it later
         let savedTrainsScreenPos = [];
-        for (let train of getTrainsOnWorm(closestWormToSplit)) {
+        for (let train of getTrainsOnWorm(closestSplit.worm)) {
           savedTrainsScreenPos.push(getTrainScreenPos(train));
         }
 
-        const path = closestWormToSplit.points;
+        const path = closestSplit.worm.points;
         // Pop redundant head
         path.pop();
         // Rotate so that empty segment is on point to split
-        rotateArrayLeft(path, closestSplittingPointIndex);
+        rotateArrayLeft(path, closestSplit.pointIndex);
         // New tail, nead head to create opening
-        path.unshift(closestSplittingPoint);
+        path.unshift(closestSplit.point);
         path.push(pmouse);
 
         // Adjust trains positions
-        adjustTrainPositions(closestWormToSplit, savedTrainsScreenPos);
+        adjustTrainPositions(closestSplit.worm, savedTrainsScreenPos);
 
-        StateDraggingWorm.worm = closestWormToSplit;
+        StateDraggingWorm.worm = closestSplit.worm;
         setState(StateDraggingWorm);
       }
     }
@@ -174,18 +193,34 @@ let StateDraggingWorm = {
 
   update(dt) {
     let pmouse = g_mouse.pos();
-    let closestTailDistance = Number.MAX_VALUE;
-    let closestWormToConnect = null;
+    let closestConnect = {
+      distance: Number.MAX_VALUE,
+      point: null,
+      worm: null,
+      headConnect: false,
+    };
 
     for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i) {
       const worm = g_game.worms[w_i];
 
+      // Can only connect to open worms
       if (!isWormClosed(worm)) {
-        // Find closest tail to connect
         const d = dist(wormTail(worm), pmouse);
-        if (d < closestTailDistance) {
-          closestTailDistance = d;
-          closestWormToConnect = worm;
+        if (d < closestConnect.distance) {
+          closestConnect.distance = d;
+          closestConnect.worm = worm;
+          closestConnect.point = wormTail(worm);
+          closestConnect.headConnect = false;
+        }
+        // If worm is inert, can also connect to head
+        if (worm !== this.worm && getTrainsOnWorm(worm).length === 0) {
+          const d = dist(wormHead(worm), pmouse);
+          if (d < closestConnect.distance) {
+            closestConnect.distance = d;
+            closestConnect.worm = worm;
+            closestConnect.point = wormHead(worm);
+            closestConnect.headConnect = true;
+          }
         }
       }
 
@@ -200,8 +235,8 @@ let StateDraggingWorm = {
     }
 
     if (g_mouse.isDown(0)) {
-      if (closestTailDistance < g_options.connectionDistance) {
-        this.connectingPoint = wormTail(closestWormToConnect);
+      if (closestConnect.distance < g_options.connectionDistance) {
+        this.connectingPoint = closestConnect.point;
       }
       else {
         this.connectingPoint = null;
@@ -253,28 +288,28 @@ let StateDraggingWorm = {
       }
     }
     else if (g_mouse.wasReleased(0)) {
-      if (closestTailDistance < g_options.connectionDistance) {
+      if (closestConnect.distance < g_options.connectionDistance) {
         // Save train screen positions to adjust it later
         let savedTrainsScreenPos = [];
-        for (let train of getTrainsOnWorm(closestWormToConnect)) {
+        for (let train of getTrainsOnWorm(closestConnect.worm)) {
           savedTrainsScreenPos.push(getTrainScreenPos(train));
         }
 
 
-        if (this.worm == closestWormToConnect) {
+        if (this.worm === closestConnect.worm) {
           // Trying to connect to one's own tail, close the worm instead
           this.worm.points[0] = wormHead(this.worm).slice();
         }
         else {
-          mergeWorm(this.worm, closestWormToConnect);
+          mergeWorm(this.worm, closestConnect.worm, closestConnect.headConnect);
 
           // Delete the merged path
-          const index = g_game.worms.indexOf(closestWormToConnect);
+          const index = g_game.worms.indexOf(closestConnect.worm);
           if (index > -1)
             g_game.worms.splice(index, 1);
 
           // Move trains of deleted worm to merged worm
-          for (let train of getTrainsOnWorm(closestWormToConnect)) {
+          for (let train of getTrainsOnWorm(closestConnect.worm)) {
             train.wormId = this.worm.id;
           }
         }
@@ -407,7 +442,10 @@ function wormLength(worm) {
   return length;
 }
 
-function mergeWorm(a, b) {
+function mergeWorm(a, b, reverse) {
+  if (reverse) {
+    b.points.reverse();
+  }
   a.points.push(...b.points);
   a.length += b.length;
 }
@@ -443,7 +481,7 @@ function getObject(id) {
 function getTrainsOnWorm(worm) {
   const trains = [];
   for (const t of g_game.trains) {
-    if (t.wormId == worm.id)
+    if (t.wormId === worm.id)
       trains.push(t);
   }
   return trains;
