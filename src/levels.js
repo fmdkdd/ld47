@@ -881,7 +881,7 @@ let g_levels = (function() {
     function endScreen() {
       StraightWorm(200, 450, 18, 'x');
       const g = GoalNode(550, 450, 50, 'blue');
-      g.hintRadius = 22;
+      g.drawHint = false;
 
       const tri1 = Wall([
         100, 150,
