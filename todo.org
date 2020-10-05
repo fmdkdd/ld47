@@ -8,7 +8,7 @@ Florent:
 - [X] Cleanup levels/focus on pacing
 - [X] Touch up index.html
 - [ ] BUG: Train on last segment may not crash and skip ahead
-- [ ] SFX/MUSIC!!!
+- [X] SFX/MUSIC!!!
 
 Merwan:
 - [X] End-of-level nodes
@@ -23,8 +23,8 @@ Merwan:
 - [ ] Worms are powered on segment by segment on level enter
 
 Open:
-- [ ] Add reset button on worm death
-- [ ] Death animation for losing train
+- [X] Add reset button on worm death
+- [X] Death animation for losing train
 - [ ] Screen shake doesn't restore camera to initial position??
 - [ ] last level: rotated lock shouldn't glow until powered on
 
