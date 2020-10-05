@@ -791,6 +791,7 @@ let StateIntro = {
     if (g_mouse.wasPressed(0)) {
       loadLevel(g_currentLevel);
       setState(StateMain);
+      playAudio('bgm', true);
     }
   },
 
