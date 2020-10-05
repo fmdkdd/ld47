@@ -308,7 +308,7 @@ function loadAudioSample(name, url, volume=1) {
       g_audio.samplesWaitingToLoad--;
     });
   };
-  g_audio.samplesWiatingToLoad++;
+  g_audio.samplesWaitingToLoad++;
   request.send();
 }
 
