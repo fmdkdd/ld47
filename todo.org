@@ -5,10 +5,10 @@ Florent:
 - [X] Color worm by danger
 - [X] Check worm length when moving
 - [X] unclosed RoundWorms instead of StraightWorms?
+- [X] Cleanup levels/focus on pacing
+- [X] Touch up index.html
 - [ ] BUG: Train on last segment may not crash and skip ahead
 - [ ] SFX/MUSIC!!!
-- [ ] Cleanup levels/focus on pacing
-- [ ] Touch up index.html
 
 Merwan:
 - [X] End-of-level nodes
