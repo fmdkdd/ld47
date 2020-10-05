@@ -211,6 +211,7 @@ function showRetryButton(on)
 
 let g_logoImage;
 let g_logoImage2;
+let g_thanksImage;
 
 window.addEventListener('DOMContentLoaded', function() {
 
@@ -222,6 +223,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
   g_logoImage = document.querySelector('#logo');
   g_logoImage2 = document.querySelector('#logo2');
+  g_thanksImage = document.querySelector('#thanks');
 
   g_canvas = document.querySelector('canvas');
 

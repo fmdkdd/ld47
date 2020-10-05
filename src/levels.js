@@ -879,8 +879,8 @@ let g_levels = (function() {
     },
 
     function endScreen() {
-      StraightWorm(200, 450, 18, 'x');
-      const g = GoalNode(550, 450, 50, 'blue');
+      StraightWorm(350, 450, 18, 'x');
+      const g = GoalNode(650, 450, 50, 'blue');
       g.drawHint = false;
 
       const tri1 = Wall([
@@ -907,6 +907,9 @@ let g_levels = (function() {
       const img2 = new Img(point(435, 190), point(130, 130), g_logoImage2);
       g_game.images.push(img2);
       img2.motor = new TranslationMotor(point(0, 10), 5000);
+
+      const img3 = new Img(point(40, 430), point(250, 100), g_thanksImage);
+      g_game.images.push(img3);
 
       Wall([-50, -50,
             1000, -50,
