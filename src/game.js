@@ -437,7 +437,6 @@ let StateLevelOver = {
 
       if (!this.levelLoaded)
       {
-        console.log(g_currentLevel)
         loadLevel(++g_currentLevel);
         this.levelLoaded = true;
       }
@@ -481,20 +480,27 @@ let StateLevelOver = {
 // StateGameover
 
 let StateGameover = {
+
+  onEnter() {
+    showRetryButton(true);
+  },
+
   update(dt) {
-    if (g_mouse.wasPressed(0)) {
+    /*if (g_mouse.wasPressed(0)) {
       gameInit();
-    }
+    }*/
+
+    //StateMain.update(dt); ???
   },
 
   render(ctxt) {
     StateMain.render(ctxt);
-    ctxt.fillStyle = 'rgba(0,0,0,0.8)';
+    /*ctxt.fillStyle = 'rgba(0,0,0,0.8)';
     ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     ctxt.fillStyle = "#fff";
     ctxt.font = '48px sans-serif';
-    ctxt.fillText("Click to retry", 300, 300);
+    ctxt.fillText("Click to retry", 300, 300);*/
   },
 };
 
@@ -664,6 +670,8 @@ function resetGameState() {
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
   g_game.wires.length = 0;
+
+  showRetryButton(false);
 }
 
 function createStraightWorm(x, y, segments, dir) {
@@ -930,6 +938,8 @@ function checkObstacles() {
       g_game.screenshake.amplitude = 2;
       g_game.screenshake.speed = 2;
       g_game.screenshake.playFor(300);
+
+      showRetryButton(true);
     }
   }
 }

@@ -27,9 +27,35 @@
     <script src="src/levels.js"></script>
     <script src="src/game.js"></script>
     <script src="src/main.js"></script>
+
+    <style>
+
+      #container {
+        margin: auto;
+        position: relative;
+        width: 800px;
+        height: 600px;
+      }
+
+      #retry {
+        z-index: 10000;
+        position: absolute;
+        bottom: 50px;
+        right: 50px;
+      }
+    </style>
 </head>
 <body>
-  <canvas>Your browser does not support HTML5 canvas</canvas>
+
+  <div id="container">
+
+    <div id="retry">
+      retry
+    </div>
+
+    <canvas>Your browser does not support HTML5 canvas</canvas>
+
+  </div>
 
   <footer>
     <p>Made by <a href="https://github.com/fmdkdd">fmdkdd</a> and <a href="https://github.com/merwaaan">merwaaan</a> for <a href="https://ldjam.com/">LD47</a></p>

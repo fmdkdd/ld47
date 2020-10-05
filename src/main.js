@@ -199,7 +199,21 @@ function onMouseLeave() {
   return false;
 }
 
+let g_retryButton;
+
+function showRetryButton(on)
+{
+  g_retryButton.style.opacity = on ? 1 : 0;
+}
+
 window.addEventListener('DOMContentLoaded', function() {
+
+  g_retryButton = document.querySelector('#retry');
+  g_retryButton.addEventListener('click', e => {
+      console.log('retry');
+      loadLevel(g_currentLevel);
+  });
+
   g_canvas = document.querySelector('canvas');
 
   if (DEBUG) {
