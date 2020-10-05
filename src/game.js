@@ -386,7 +386,7 @@ let StateDraggingWorm = {
 
 let StateLevelOver = {
 
-  explosionDuration: 0,
+  pause1Duration: 500,
   fadeOutDuration: 500,
   fadeInDuration: 1000,
   pauseDuration: 600,
@@ -422,7 +422,7 @@ let StateLevelOver = {
     g_game.trains.length = 0;*/
 
     this.age = 0;
-    this.fadeOut = true;
+    this.fadeOut = false;
     this.fadeIn = false;
     this.levelLoaded = false;
   },
@@ -432,19 +432,19 @@ let StateLevelOver = {
     this.age += dt;
 
     // 3 - End
-    if (this.age > this.explosionDuration + this.fadeOutDuration + this.fadeInDuration + this.pauseDuration)
+    if (this.age > this.pause1Duration + this.fadeOutDuration + this.fadeInDuration + this.pauseDuration)
     {
       setState(StateMain);
     }
 
     // 3 - Final pause
-    if (this.age > this.explosionDuration + this.fadeOutDuration + this.fadeInDuration)
+    if (this.age > this.pause1Duration + this.fadeOutDuration + this.fadeInDuration)
     {
       this.fadeIn = false;
     }
 
     // 2 - Load level & fade in
-    else if (this.age > this.explosionDuration + this.fadeOutDuration)
+    else if (this.age > this.pause1Duration + this.fadeOutDuration)
     {
       this.fadeOut = false;
       this.fadeIn = true;
@@ -457,10 +457,10 @@ let StateLevelOver = {
     }
 
     // 1 - Fade out
-    /*else if (this.age > this.explosionDuration)
+    else if (this.age > this.pause1Duration)
     {
       this.fadeOut = true;
-    }*/
+    }
 
     g_game.grid.update(dt);
     updateAnimations(dt);
@@ -472,8 +472,8 @@ let StateLevelOver = {
     if (this.fadeOut || this.fadeIn)
     {
       const progress = this.fadeOut ?
-        (this.age - this.explosionDuration) / this.fadeOutDuration :
-        1 - (this.age - (this.explosionDuration + this.fadeOutDuration)) / this.fadeInDuration;
+        (this.age - this.pause1Duration) / this.fadeOutDuration :
+        1 - (this.age - (this.pause1Duration + this.fadeOutDuration)) / this.fadeInDuration;
 
       ctxt.globalAlpha = progress;
       ctxt.fillStyle = BACKGROUND_COLOR;
