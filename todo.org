@@ -29,7 +29,7 @@ Open:
 
 Polish:
 - [ ] Embelish trains
-- [ ] Level transition
+- [X] Level transition
 - [ ] To make connection easier, maybe allow connection beyond the
   connectionDistance?
 - [ ] Small gap when rendering closed worms
@@ -44,4 +44,4 @@ Ideas:
 - Colored trains act as keys for loop nodes
 - Loop nodes can require multiple keys/(same color/different colors)
 - Slowdown effet on gameover (to understand cause of failure)
-- Can move obstacle instead of using doors
+- [X] Can move obstacle instead of using doors
