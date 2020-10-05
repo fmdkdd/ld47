@@ -879,8 +879,58 @@ let g_levels = (function() {
     },
 
     function endScreen() {
-      // TODO: Title+credits
-      // one or two worms to play with
+      StraightWorm(200, 450, 18, 'x');
+      const g = GoalNode(550, 450, 50, 'blue');
+      g.hintRadius = 22;
+
+      const tri1 = Wall([
+        100, 150,
+        600, 80,
+        400, 300,
+        ], 'blue');
+      tri1.motor = new TranslationMotor(point(-5, -3), 4000);
+
+      const tri2 = Wall([
+        120, 100,
+        650, 120,
+        300, 300,
+        ], 'red');
+      tri2.motor = new TranslationMotor(point(5, 5), 6000);
+
+      const img = new Img(point(130, 110), point(550, 160), g_logoImage);
+      g_game.images.push(img);
+      img.motor = new RotationMotor(0.25, point(140,180), 10000);
+
+      const circle = Circle(point(500, 250), 70, 'yellow');
+      circle.motor = new TranslationMotor(point(0, 10), 5000);
+
+      const img2 = new Img(point(435, 190), point(130, 130), g_logoImage2);
+      g_game.images.push(img2);
+      img2.motor = new TranslationMotor(point(0, 10), 5000);
+
+      Wall([-50, -50,
+            1000, -50,
+            1000,  50,
+            -50,  20],
+           'pink');
+
+      Wall([-50,  -50,
+            50,  -50,
+            10, 1000,
+            -50, 1000],
+           'blue');
+
+      Wall([-50, 1000,
+            -50,  550,
+            1000,  590,
+            1000,  610],
+           'green');
+
+      Wall([750, -50,
+            850, -50,
+            850, 610,
+            780, 610],
+           'yellow');
     },
   ];
 
