@@ -71,6 +71,22 @@ let g_levels = (function() {
     return w;
   }
 
+  function ArcWall(x, y, innerRadius, outerRadius, segments, angleFactor, angleOffset, colorName) {
+    let p = [];
+    for (let i=0; i < segments; ++i) {
+      const angle = i * angleFactor + angleOffset;
+      p.push(x + Math.cos(angle) * outerRadius,
+             y + Math.sin(angle) * outerRadius);
+    }
+    for (let i=segments-1; i >= 0; --i) {
+      const angle = i * angleFactor + angleOffset;
+      p.push(x + Math.cos(angle) * innerRadius,
+             y + Math.sin(angle) * innerRadius);
+    }
+    const w = Wall(p, colorName);
+    return w;
+  }
+
   return [
     function level0() {
       StraightWorm(200, 300, 18, 'x');
@@ -696,14 +712,24 @@ let g_levels = (function() {
 
     function level8() {
       Train(RoundWorm(121, 98, 30, 20), 0.4);
-      Train(RoundWorm(718, 502, 30, 20), 0.4);
+      Train(RoundWorm(705, 511, 30, 20), 0.4);
 
       Dooro(326, 29,  800, 0.0008, 'orange', 0.8, 120);
       Dooro(244, 109, 80, 0.0005, 'orange', 0.8, 120);
       Dooro(104, 245, 80, 0.0007, 'orange', 0.8, 120);
 
-      Dooro(711, 379, 30, 0.001, 'blue', 1.6, 120);
-      Dooro(550, 517, 20, 0.001, 'blue', 0.3, 120);
+      {
+        const x = 930;
+        const y = 900;
+        const w0 = ArcWall(x, y, 520, 550, 50, -0.01, -2.3, 'blue');
+        w0.motor = new RotationMotor(0.2, point(x,y), 4000);
+
+        const w1 = ArcWall(x, y, 520, 550, 50, -0.01, -2.3, 'blue');
+        w1.motor = new RotationMotor(0.2, point(x,y), 8000);
+
+        const w2 = ArcWall(x, y, 520, 550, 50, -0.01, -1.6, 'blue');
+        w2.motor = new RotationMotor(-0.2, point(x,y), 8000);
+      }
 
       const g = GoalNode(389, 283, 30, 'blue');
       g.hintRadius = 30;
