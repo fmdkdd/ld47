@@ -119,7 +119,7 @@ class LoopNode
     // Cast an horizontal ray from the node's position.
     // Odd number of intersections = the node is surrounded
 
-    let ray = [this.pos[0], this.pos[1], this.pos[0] + 10000, this.pos[1]];
+    /*let ray = [this.pos[0], this.pos[1], this.pos[0] + 10000, this.pos[1]];
 
     let hits = 0;
 
@@ -137,7 +137,13 @@ class LoopNode
         ++hits;
     }
 
-    return (hits & 1) == 1;
+    // Debug
+    if ((hits & 1) == 1)
+      console.log(hits);
+
+    return (hits & 1) == 1;*/
+
+    return pointInPolygon(this.pos, [worm.points]);
   }
 }
 

@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 6;
+let g_currentLevel = 1;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
@@ -103,7 +103,7 @@ let g_levels = (function() {
     function level1() {
       const w0 = RoundWorm(250, 300, 40, 20);
       GoalNode(550, 300, 10, 'blue');
-      Train(w0);
+      //Train(w0);
 
       Wall([-50, -50,
             1000, -50,

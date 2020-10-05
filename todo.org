@@ -14,7 +14,7 @@ Merwan:
 - [X] Collisions lead to game over
 - [X] Orbit around loop nodes to nudge player
 - [X] Ditch rendering wire: use same color for linked switch and door
-- [ ] BUG: node-surrounding check not robust
+- [X] BUG: node-surrounding check not robust
 - [ ] More colors!
 - [ ] Visually distinct exit nodes
 - [ ] Exit nodes animation to win level?
