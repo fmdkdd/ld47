@@ -528,7 +528,7 @@ let g_levels = (function() {
 
       Dooro(200, 280, 30, 0.002, 'pink');
       Dooro(300, 330, 30, 0.004, 'pink');
-      Dooro(390, 260, 35, 0.006, 'pink');
+      Dooro(390, 260, 32, 0.006, 'pink');
       Dooro(460, 200, 10, 0.005, 'pink');
 
       Wall([
