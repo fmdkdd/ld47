@@ -8,6 +8,7 @@ class LoopNode
     this.radius = radius;
     this.color = color;
     this.drawHint = drawHint;
+    this.hintRadius = 50;
     this.onSurrounded = onSurrounded;
 
     this.enabled = false;
@@ -92,26 +93,27 @@ class LoopNode
 
     if (this.drawHint)
     {
-      const dur = 10000;
+      const dur = 5000;
       const dur2 = dur / 2;
+      const radius = this.radius + this.hintRadius;
 
       const progress = (this.age % dur) / dur;
 
       ctx.lineWidth = 2;
       ctx.globalAlpha = 0.8;
       ctx.strokeStyle = '#DCDCDC';
-      ctx.setLineDash([1, 16]);
+      ctx.setLineDash([3, 10]);
       ctx.beginPath();
 
       if (progress < 0.5)
       {
         const angle = lerp(0, 2 * Math.PI, progress / 0.5);
-        ctx.arc(this.pos[0], this.pos[1], this.radius + 50, -Math.PI * 0.5, -Math.PI * 0.5 + angle, false);
+        ctx.arc(this.pos[0], this.pos[1], radius, -Math.PI * 0.5, -Math.PI * 0.5 + angle, false);
       }
       else
       {
         const angle = lerp(0, 2 * Math.PI, (progress - 0.5) / 0.5);
-        ctx.arc(this.pos[0], this.pos[1], this.radius + 50, -Math.PI * 0.5, -Math.PI * 0.5 + angle, true);
+        ctx.arc(this.pos[0], this.pos[1], radius, -Math.PI * 0.5, -Math.PI * 0.5 + angle, true);
       }
 
       ctx.stroke();

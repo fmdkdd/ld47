@@ -163,7 +163,13 @@ function onMouseUp(event) {
 
 // TODO remove
 function onMouseWheel(event) {
-  g_game.animations.push(makeExplosion([200, 200], 10));
+  //g_game.animations.push(makeExplosion([200, 200], 10));
+  if (event.deltaY > 0)
+    g_currentLevel++;
+  else
+    g_currentLevel--;
+  g_currentLevel = g_currentLevel % g_levels.length;
+  loadLevel(g_currentLevel);
 
   event.preventDefault();
   return false;
