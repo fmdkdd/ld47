@@ -704,6 +704,7 @@ function resetGameState() {
   g_game.obstacles.length = 0;
   g_game.doors.length = 0;
   g_game.wires.length = 0;
+  g_game.images.length = 0;
 
   showRetryButton(false);
 }
