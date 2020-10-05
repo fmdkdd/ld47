@@ -119,6 +119,7 @@ let StateMain = {
 
     updateTrains(dt);
 
+    updateObstacles(dt);
     updateLoopNodes(dt);
     updateDoors(dt);
     updateWires(dt);
@@ -343,6 +344,7 @@ let StateDraggingWorm = {
 
     updateTrains(dt);
 
+    updateObstacles(dt);
     updateLoopNodes(dt);
     updateDoors(dt);
     updateWires(dt);
@@ -658,19 +660,23 @@ function testLevel() {
       g_game.obstacles.push(new Obstacles(wave, 'orange'));
     }*/
 
-    g_game.obstacles.push(new Obstacles([
+    const topWall = new Obstacles([
       point(-50, -50),
       point(1000, -50),
       point(1000, 50),
       point(-50, 20)
-    ], 'pink'));
+    ], 'pink');
+    topWall.motor = new TranslationMotor(point(10, 20), 2000);
+    g_game.obstacles.push(topWall);
 
-    g_game.obstacles.push(new Obstacles([
+    const leftWall = new Obstacles([
       point(-50, -50),
       point(50, -50),
       point(10, 1000),
       point(-50, 1000)
-    ], 'blue'));
+    ], 'blue');
+    leftWall.motor = new RotationMotor(-0.8, point(0, 0), 2000);
+    g_game.obstacles.push(leftWall);
   }
 
   // Triggered door
@@ -699,8 +705,13 @@ function testLevel() {
 }
 
 function gameInit() {
-  //loadLevel(g_currentLevel);
-  testLevel();
+  loadLevel(g_currentLevel);
+  //testLevel();
+}
+
+function updateObstacles(dt)
+{
+  g_game.obstacles.forEach(obs => obs.update(dt));
 }
 
 function updateLoopNodes(dt)
