@@ -42,10 +42,10 @@ class Obstacles
       const wormA = worm.points[i - 1];
       const wormB = worm.points[i];
 
-      for (let j = 1; j < transformedPoints.length; ++j)
+      for (let j = 0; j < transformedPoints.length; ++j)
       {
-        const obsA = transformedPoints[j - 1];
-        const obsB = transformedPoints[j];
+        const obsA = transformedPoints[j];
+        const obsB = transformedPoints[(j + 1) % transformedPoints.length];
 
         const hit = Intersects.lineLine(
           wormA[0], wormA[1], wormB[0], wormB[1],
