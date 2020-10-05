@@ -508,14 +508,25 @@ function crashTrain(train)
 {
   train.hasCrashed = true;
 
+  const worm = getObject(train.wormId);
+
+  g_game.animations.push(new WormExplosion(worm.points, 'blue'));
   g_game.animations.push(makeTrainExplosion(getTrainScreenPos(train), 10));
+
+  g_game.worms.splice(g_game.worms.indexOf(worm), 1);
+  g_game.trains.splice(g_game.trains.indexOf(train), 1);
 }
 
 function getTrainScreenPos(train) {
   const worm = getObject(train.wormId);
   const path = worm.points;
   const a = path[Math.trunc(train.pos) + 0];
-  const b = path[Math.trunc(train.pos) + 1];
+  let b = path[Math.trunc(train.pos) + 1];
+  // HACK: trainScreenPos is used for the train explosion animation, which can
+  // happen if there is no point at +1, so we use the previous one instead.
+  if (b == null) {
+    b = path[Math.trunc(train.pos) - 1];
+  }
   const frac = train.pos - Math.trunc(train.pos);
   const x = lerp(a[0], b[0], frac);
   const y = lerp(a[1], b[1], frac);
@@ -884,7 +895,7 @@ function updateTrains(dt) {
         train.pos -= max_pos;
       }
       else {
-        crashTrain(train)
+        crashTrain(train);
         setState(StateGameover);
       }
     }
@@ -899,7 +910,7 @@ function renderTrains(ctxt) {
     ctxt.fillStyle = '#b00';
 
     const pos = getTrainScreenPos(train);
-    drawPoint(ctxt, pos, 10, 'red', 'red')
+    drawPoint(ctxt, pos, 10, 'red', 'red');
   }
 }
 
@@ -936,6 +947,10 @@ function checkObstacles() {
     if ([...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors].some(obj => obj.hits(worm)))
     {
       //setState(StateGameover);
+
+      for (let t of getTrainsOnWorm(worm)) {
+        crashTrain(t);
+      }
 
       g_game.worms.splice(w_i, 1);
       --w_i;
