@@ -44,14 +44,20 @@ class ParticleSystem
     {
       const color = g_colors[p.color];
 
-      //ctx.globalCompositeOperation = 'lighter';
-      //ctx.fillStyle = '#ff3bfe';
-      //ctx.fillRect(p.pos[0], p.pos[1], 6 * p.scale, 6 * p.scale);
+      if (g_options.glowEnabled)
+      {
+        ctx.shadowColor = color[1];
+        ctx.shadowBlur = 10;
+      }
 
-      //ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1 - p.age / p.lifetime;
       ctx.fillStyle = color[1];
-      ctx.fillRect(p.pos[0], p.pos[1], 1 * p.scale, 1 * p.scale);
+      ctx.beginPath();
+      ctx.arc(p.pos[0], p.pos[1], p.scale, 0, 2 * Math.PI);
+      ctx.fill();
     });
+
+    ctx.globalAlpha = 1;
   }
 }
 
@@ -106,11 +112,11 @@ function makeTrainExplosion(pos, particleCount)
   {
     particles.push(new Particle(
       pos.slice(),
-      vmult(randomDir(), 20 + Math.random() * 10),
+      vmult(randomDir(), 200 + Math.random() * 50),
       {
-        lifetime: 3000,
+        lifetime: 1000,
         drag: 0.99,
-        fromScale: 10,
+        fromScale: 5,
         toScale: 2,
         color: 'red'
       }

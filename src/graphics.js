@@ -21,7 +21,7 @@ function drawShape(ctx, points, colorName, on = true)
   if (on && g_options.glowEnabled)
   {
     ctx.shadowColor = color[1];
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
   }
   else
   {
