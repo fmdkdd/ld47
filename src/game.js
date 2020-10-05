@@ -305,7 +305,7 @@ let StateDraggingWorm = {
       // Add points at mouse position
       this.worm.points.push(pmouse);
 
-      if (closestConnect.distance < g_options.connectionDistance) {
+      if (closestConnect.distance < g_options.connectionDistance + 5) {
         // Save train screen positions to adjust it later
         let savedTrainsScreenPos = [];
         for (let train of getTrainsOnWorm(closestConnect.worm)) {
