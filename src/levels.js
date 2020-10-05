@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 1;
+let g_currentLevel = 7;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
@@ -44,8 +44,9 @@ let g_levels = (function() {
     return n;
   }
 
-  function Train(worm) {
+  function Train(worm, speed=g_options.trainSpeed) {
     const t = createTrain(worm.id);
+    t.speed = speed;
     g_game.trains.push(t);
     return t;
   }
@@ -425,8 +426,8 @@ let g_levels = (function() {
     },
 
     function level7() {
-      Train(RoundWorm(187, 114, 25, 20));
-      Train(RoundWorm(718, 502, 25, 20));
+      Train(RoundWorm(187, 114, 25, 20), 0.4);
+      Train(RoundWorm(718, 502, 25, 20), 0.4);
 
       {
         const s = Switch(518, 358, 8, 'orange');

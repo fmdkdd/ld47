@@ -721,6 +721,7 @@ function rotateArrayLeft(a, n) {
 }
 
 function updateTrains(dt) {
+  outer:
   for (let train of g_game.trains) {
     if (train.hasCrashed)
       continue;
@@ -730,9 +731,33 @@ function updateTrains(dt) {
     const max_pos = path.length - 1;
     // Normalize speed by segment length so that the train
     // always advances at the same speed regardless of segment length
-    const a = path[Math.trunc(train.pos) + 1];
-    const b = path[Math.trunc(train.pos) + 0];
-    train.pos += train.speed / dist(a, b);
+    let d;
+    while (true) {
+      const currentPointIndex = Math.trunc(train.pos);
+      let nextPointIndex = Math.trunc(train.pos) + 1;
+      if (isWormClosed(worm)) {
+        nextPointIndex = nextPointIndex % path.length;
+        if (nextPointIndex === 0)
+          nextPointIndex++;
+      }
+      assert(currentPointIndex < path.length);
+      if (!isWormClosed(worm) && nextPointIndex >= path.length) {
+        train.hasCrashed = true;
+        setState(StateGameover);
+        continue outer;
+      }
+      assert(nextPointIndex < path.length);
+      const a = path[currentPointIndex];
+      const b = path[nextPointIndex];
+      d = dist(a, b);
+      // FIXME: d == 0, we have a redundant point
+      // It shouldn't happen, but we can fix it right there
+      if (d > 0)
+        break;
+      path.splice(currentPointIndex, 1);
+    }
+    assert(d > 0);
+    train.pos += train.speed / d;
     if (train.pos >= max_pos) {
       if (isWormClosed(worm)) {
         train.pos -= max_pos;

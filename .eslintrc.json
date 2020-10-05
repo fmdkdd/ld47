@@ -7,6 +7,7 @@
   "rules": {
     "semi": "error",
     "no-unused-vars": ["warn", {"vars": "local"}],
-    "no-undef": "off"
+    "no-undef": "off",
+    "no-constant-condition": "off"
   }
 }
