@@ -13,6 +13,8 @@ Merwan:
 - [X] End-of-level nodes
 - [X] Collisions lead to game over
 - [X] Orbit around loop nodes to nudge player
+- [X] Ditch rendering wire: use same color for linked switch and door
+- [ ] BUG: node-surrounding check not robust
 - [ ] More colors!
 - [ ] Visually distinct exit nodes
 - [ ] Exit nodes animation to win level?
@@ -20,7 +22,6 @@ Merwan:
 Open:
 - [ ] Add reset button on worm death
 - [ ] Death animation for losing train
-- [ ] Ditch rendering wire: use same color for linked switch and door
 
 Polish:
 - [ ] Embelish trains
