@@ -4,31 +4,25 @@ const g_colors =
   blue: ['#cff7ff', '#29dcfd', '#3a5d63'],
   pink: ['#ffdeff', '#ff61fe', '#6E4B6E'],
   orange: ['#ffe4d9', '#ff6121', '#573d33'],
-  yellow: ['#ffffb5', '#fdfc07', '#6e6e3c']
+  yellow: ['#ffffb5', '#fdfc07', '#6e6e3c'],
+  green: ['#baffd8', '#21ff85', '#496e59'],
+  white: ['white', 'white', 'grey'],
+  red: ['#ff8787', '#ff3b3b', '#6e4040'],
 };
 
 function drawShape(ctx, points, colorName, on = true)
 {
   const color = g_colors[colorName];
 
+  ctx.save();
+
   if (on && g_options.glowEnabled)
   {
-    ctx.fillStyle = color[1];
-    //ctx.globalCompositeOperation = 'lighter';
-    ctx.filter = 'blur(5px)';
-    ctx.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
-
-    ctx.beginPath();
-    ctx.moveTo(points[0][0], points[0][1]);
-    for (let i = 1; i < points.length; ++i)
-      ctx.lineTo(points[i][0], points[i][1]);
-    ctx.closePath();
-    ctx.fill();
+    ctx.shadowColor = color[1];
+    ctx.shadowBlur = 10;
   }
 
-  ctx.fillStyle = on || color.length < 3 ? color[0] : color[2];
-  ctx.globalCompositeOperation = 'source-over';
-  ctx.filter = 'none';
+  ctx.fillStyle = on ? color[0] : color[2];
 
   ctx.beginPath();
   ctx.moveTo(points[0][0], points[0][1]);
@@ -37,37 +31,27 @@ function drawShape(ctx, points, colorName, on = true)
   ctx.closePath();
   ctx.fill();
 
-  /*if (!on)
-  {
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = color[1];
-    ctx.lineWidth = 3;
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }*/
+  ctx.restore();
 }
 
 function drawPath(ctx, points, strokeColor, glowColor)
 {
   const curvePoints = points.flat();
 
+  ctx.save();
+
   // Glow layer
+
+  ctx.globalCompositeOperation = 'lighter';
 
   if (g_options.glowEnabled)
   {
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.filter = 'blur(5px)';
-    ctx.strokeStyle = glowColor;
-    ctx.lineWidth = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
-    ctx.beginPath();
-    ctx.moveTo(points[0][0], points[0][1]);
-    ctx.curve(curvePoints, g_options.curveTension, g_options.curveSegments, false);
-    ctx.stroke();
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
   }
 
   // Core layer
 
-  ctx.globalCompositeOperation = 'source-over';
   ctx.filter = 'none';
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = 4;
@@ -92,6 +76,8 @@ function drawPath(ctx, points, strokeColor, glowColor)
     ctx.fill()
   }
   */
+
+  ctx.restore();
 }
 
 function glow()

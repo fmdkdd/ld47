@@ -63,15 +63,12 @@ class LoopNode
 
     ctx.save();
 
+    ctx.globalCompositeOperation = 'lighter';
+
     if (this.enabled && g_options.glowEnabled)
     {
-      ctx.fillStyle = color[1];
-      //ctx.globalCompositeOperation = 'lighter';
-      ctx.filter = 'blur(5px)';
-
-      ctx.beginPath();
-      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
-      ctx.fill();
+      ctx.shadowColor = color[1];
+      ctx.shadowBlur = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
     }
 
     ctx.fillStyle = this.enabled || color.length < 3 ? color[0] : color[2];
