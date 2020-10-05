@@ -758,10 +758,6 @@ let g_levels = (function() {
            'blue');
     },
 
-    function beforeLast() {
-
-    },
-
     function level9() {
       const g = GoalNode(402, 299, 22, 'white');
       g.hintRadius = 20;

@@ -25,6 +25,7 @@ Merwan:
 Open:
 - [ ] Add reset button on worm death
 - [ ] Death animation for losing train
+- [ ] Screen shake doesn't restore camera to initial position??
 - [ ] last level: rotated lock shouldn't glow until powered on
 
 Polish:

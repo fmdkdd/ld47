@@ -109,7 +109,7 @@ function update(dt) {
 function render(ctxt) {
   ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  ctxt.fillStyle = BACKGROUND_COLOR
+  ctxt.fillStyle = BACKGROUND_COLOR;
   ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   ctxt.save();
@@ -179,6 +179,8 @@ function onMouseWheel(event) {
   else
     g_currentLevel--;
 
+  if (g_currentLevel < 0)
+    g_currentLevel += g_levels.length;
   g_currentLevel = g_currentLevel % g_levels.length;
   loadLevel(g_currentLevel);
   setState(StateMain);
@@ -189,6 +191,12 @@ function onMouseWheel(event) {
 
 function onContextMenu(event) {
   event.preventDefault();
+  return false;
+}
+
+function onMouseLeave() {
+  // Release left button
+  g_mouse.buttons[0] = BUTTON_STATE_UP;
   return false;
 }
 
@@ -232,6 +240,7 @@ window.addEventListener('DOMContentLoaded', function() {
   g_canvas.addEventListener('mousemove',   onMouseMove);
   g_canvas.addEventListener('mousedown',   onMouseDown);
   g_canvas.addEventListener('mouseup',     onMouseUp);
+  g_canvas.addEventListener('mouseleave',  onMouseLeave);
   g_canvas.addEventListener('contextmenu', onContextMenu);
 
   g_canvas.width = CANVAS_WIDTH;
