@@ -279,23 +279,26 @@ window.addEventListener('DOMContentLoaded', function() {
 let g_audio = {
   context: null,
   buffers: {},
+  volumes: {},
 };
 
 function initAudio() {
   g_audio.context = new AudioContext();
 
-  loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
-  loadAudioSample('fritz', 'assets/fritz.ogg');
   loadAudioSample('bgm', 'assets/bgm.ogg');
+  loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
+  loadAudioSample('fritz', 'assets/fritz.ogg', 3);
+  loadAudioSample('switch', 'assets/switch.ogg', 0.3);
 }
 
-function loadAudioSample(name, url) {
+function loadAudioSample(name, url, volume=1) {
   let request = new XMLHttpRequest();
   request.open("GET", url, true);
   request.responseType = "arraybuffer";
   request.onload = function onload() {
     g_audio.context.decodeAudioData(this.response, function(decodedBuffer) {
       g_audio.buffers[name] = decodedBuffer;
+      g_audio.volumes[name] = volume;
     });
   };
   request.send();
@@ -303,11 +306,21 @@ function loadAudioSample(name, url) {
 
 function playAudio(name, loop=false) {
   const source = g_audio.context.createBufferSource();
-  source.connect(g_audio.context.destination);
   if (g_audio.buffers[name] == null) {
     console.warn(`Audio buffer ${name} empty`);
   }
   source.buffer = g_audio.buffers[name];
   source.loop = loop;
+
+  const volume = g_audio.volumes[name];
+  if (volume != 1) {
+    const gain = g_audio.context.createGain();
+    gain.gain.value = volume;
+    source.connect(gain);
+    gain.connect(g_audio.context.destination);
+  } else {
+    source.connect(g_audio.context.destination);
+  }
+
   source.start(0);
 }

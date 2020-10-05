@@ -23,21 +23,27 @@ class LoopNode
   {
     this.age += dt;
 
-    this.enabled = false;
+    const prevEnabled = this.enabled;
+    let enabled = false;
 
     for (let w_i=0, w_len=g_game.worms.length; w_i < w_len; ++w_i)
     {
       if (this.isSurrounded(g_game.worms[w_i]))
       {
         // Execute the callback
-        if (this.onSurrounded && !this.enabled)
-        {
+        if (this.onSurrounded && !this.enabled) {
           this.onSurrounded();
         }
 
-        this.enabled = true;
+        enabled = true;
+
         break;
       }
+    }
+
+    if (prevEnabled != enabled) {
+      this.enabled = enabled;
+      playAudio('switch');
     }
 
     if (this.animation)
@@ -173,7 +179,7 @@ class LoopNode
 function makeEndLevelNode(pos, radius, color)
 {
   const node = new LoopNode(pos, radius, color, true, () => setState(StateLevelOver));
-  node.enabled = true;
+  node.enabled = false;
   node.drawSquare = false;
   node.animation = new WaveAnimation(50, 3000, 5000);
   return node;
