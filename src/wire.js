@@ -9,6 +9,11 @@ class Wire
   update(dt)
   {
     // Sync the two objects
+    if (Array.isArray(this.to)) {
+      for (let t of this.to) {
+        t.powered = this.from.enabled;
+      }
+    }
     this.to.powered = this.from.enabled;
   }
 
