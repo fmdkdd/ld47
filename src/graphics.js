@@ -123,3 +123,67 @@ class BlinkingAnimation
     this.nextToggle = Math.random() * (this.on ? this.offMaxDuration : this.onMaxDuration);
   }
 }
+
+class WaveAnimation
+{
+  constructor(radius, travelDuration, pauseDuration)
+  {
+    this.radius = radius;
+    this.travelDuration = travelDuration;
+    this.pauseDuration = pauseDuration;
+
+    this.age = 0;
+    this.travel = true;
+  }
+
+  done()
+  {
+    return false;
+  }
+
+  update(dt)
+  {
+    this.age += dt;
+
+    if (this.travel)
+    {
+      if (this.age > this.travelDuration)
+      {
+        this.travel = false;
+      }
+    }
+    else
+    {
+      if (this.age > this.travelDuration + this.pauseDuration)
+      {
+        this.travel = true;
+        this.age = 0;
+      }
+    }
+  }
+
+  render(ctx, pos)
+  {
+    ctx.save();
+
+    if (!this.travel)
+      return;
+
+    const progress = this.age / this.travelDuration
+    const radius = this.radius * progress;
+
+    ctx.globalAlpha = 1 - progress;
+
+    const gradient = ctx.createRadialGradient(pos[0], pos[1], 0, pos[0], pos[1], radius);
+    gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0)');
+    gradient.addColorStop(0.95, 'rgba(255, 255, 255, 0.2)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.7)');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(pos[0], pos[1], radius, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.restore();
+  }
+}

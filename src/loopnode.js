@@ -15,6 +15,8 @@ class LoopNode
     this.anchorPos = this.pos;
     this.age = 0;
     this.drawSquare = true; // Otherwise circle
+
+    this.animation = null;
   }
 
   update(dt)
@@ -36,6 +38,11 @@ class LoopNode
         this.enabled = true;
         break;
       }
+    }
+
+    if (this.animation)
+    {
+      this.animation.update(dt);
     }
   }
 
@@ -63,6 +70,11 @@ class LoopNode
     const color = g_colors[this.color];
 
     ctx.save();
+
+    if (this.animation)
+    {
+      this.animation.render(ctx, this.pos);
+    }
 
     ctx.globalCompositeOperation = 'lighter';
 
@@ -161,6 +173,8 @@ class LoopNode
 function makeEndLevelNode(pos, radius, color)
 {
   const node = new LoopNode(pos, radius, color, true, () => setState(StateLevelOver));
+  node.enabled = true;
   node.drawSquare = false;
+  node.animation = new WaveAnimation(50, 3000, 5000);
   return node;
 }
