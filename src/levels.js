@@ -538,14 +538,14 @@ let g_levels = (function() {
       RoundWorm(120, 100, 25, 20);
 
       {
-        const s = Switch(158, 223, 8, 'orange');
+        const s = Switch(158, 223, 10, 'orange');
         const d = Dooro(300, 280, 40, 0.004, 'orange', -12, 1000);
         d.age = 1200;
         Wiro(s, d);
       }
 
       {
-        const s = Switch(442, 460, 8, 'pink');
+        const s = Switch(442, 460, 10, 'pink');
         const d = Dooro(600, 380, 15, 0.008, 'pink', 2.3, 1000);
         d.age = 1400;
         Wiro(s, d);
@@ -583,22 +583,25 @@ let g_levels = (function() {
       Train(RoundWorm(131, 123, 25, 20), 0.4);
       Train(RoundWorm(298, 445, 25, 20), 0.4);
 
+      let orangeSwitch;
       {
-        const s = Switch(328, 134, 8, 'orange');
+        const s = Switch(328, 134, 10, 'orange');
         const d0 = Dooro(549, 448, 15, 0.008, 'orange', -0.02, 150);
         d0.age = 1400;
         Wiro(s, [d0]);
+
+        orangeSwitch = s;
       }
 
       {
-        const s = Switch(675, 447, 8, 'green');
+        const s = Switch(675, 447, 10, 'green');
         const d = Dooro(415, 143, 15, 0.008, 'green', 0.05, 150);
         d.age = 1400;
         Wiro(s, d);
       }
 
       {
-        const s = Switch(176, 450, 8, 'pink');
+        const s = Switch(176, 450, 10, 'pink');
         const d0 = Dooro(233, 127, 15, 0.008, 'pink', 0.05, 150);
         const d1 = Dooro(500, 141, 15, 0.008, 'pink', 0.05, 150);
         d0.age = 1400;
@@ -614,8 +617,11 @@ let g_levels = (function() {
         for (let i=0; i < 202; ++i) {
           wave.push(-10 + i * 11, 378 + Math.sin(i * 0.28) * 20);
         }
-        wave.push(787, 313, 27, 286);
-        Wall(wave, 'orange');
+        wave.push(787, 283, 27, 256);
+        const w = Wall(wave, 'orange');
+        w.motor = new TranslationMotor(point(0, 40), 8000);
+        w.motor.age = -2000;
+        Wiro(orangeSwitch, w.motor);
       }
 
       {
@@ -623,8 +629,11 @@ let g_levels = (function() {
         for (let i=0; i < 202; ++i) {
           wave.push(-10 + i * 11, 508 - Math.sin(i * 0.28) * 20);
         }
-        wave.push(800, 600, 0, 600);
-        Wall(wave, 'orange');
+        wave.push(800, 1000, 0, 1000);
+        const w = Wall(wave, 'orange');
+        w.motor = new TranslationMotor(point(0, -40), 8000);
+        w.motor.age = -2000;
+        Wiro(orangeSwitch, w.motor);
       }
 
       Wall([

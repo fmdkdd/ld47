@@ -117,6 +117,8 @@ let StateMain = {
       }
     }
 
+    checkObstacles();
+
     updateTrains(dt);
 
     updateObstacles(dt);
@@ -232,26 +234,7 @@ let StateDraggingWorm = {
       }
     }
 
-    // Check obstacles
-
-    for (let w_i=0; w_i < g_game.worms.length; ++w_i) {
-      const worm = g_game.worms[w_i];
-
-      if ([...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors].some(obj => obj.hits(worm)))
-      {
-        //setState(StateGameover);
-
-        g_game.worms.splice(w_i, 1);
-        --w_i;
-
-        g_game.animations.push(new WormExplosion(worm.points, 'blue'));
-
-        // BrrRrRRrrr
-        g_game.screenshake.amplitude = 2;
-        g_game.screenshake.speed = 2;
-        g_game.screenshake.playFor(300);
-      }
-    }
+    checkObstacles();
 
     if (g_mouse.isDown(0)) {
       if (closestConnect.distance < g_options.connectionDistance) {
@@ -920,5 +903,26 @@ function getWormColors(danger) {
   }
   else {
     return g_colors['pink'];
+  }
+}
+
+function checkObstacles() {
+  for (let w_i=0; w_i < g_game.worms.length; ++w_i) {
+    const worm = g_game.worms[w_i];
+
+    if ([...g_game.obstacles, ...g_game.loopNodes, ...g_game.doors].some(obj => obj.hits(worm)))
+    {
+      //setState(StateGameover);
+
+      g_game.worms.splice(w_i, 1);
+      --w_i;
+
+      g_game.animations.push(new WormExplosion(worm.points, 'blue'));
+
+      // BrrRrRRrrr
+      g_game.screenshake.amplitude = 2;
+      g_game.screenshake.speed = 2;
+      g_game.screenshake.playFor(300);
+    }
   }
 }
