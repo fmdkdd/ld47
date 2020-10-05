@@ -26,7 +26,7 @@ Open:
 - [X] Add reset button on worm death
 - [X] Death animation for losing train
 - [ ] Screen shake doesn't restore camera to initial position??
-- [ ] last level: rotated lock shouldn't glow until powered on
+- [X] last level: rotated lock shouldn't glow until powered on
 
 Polish:
 - [ ] Embelish trains

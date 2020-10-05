@@ -15,6 +15,7 @@ class Obstacles
   {
     if (this.motor)
     {
+      this.on = this.motor.powered;
       this.motor.update(dt);
     }
 
