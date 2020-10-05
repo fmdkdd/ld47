@@ -30,6 +30,7 @@ class RotationMotor
     this.angle = angle;
     this.pivot = pivot;
     this.duration = duration;
+    this.powered = true;
 
     this.age = 0;
     this.currentOffset = 0;
@@ -37,6 +38,9 @@ class RotationMotor
 
   update(dt)
   {
+    if (!this.powered)
+      return;
+
     this.age += dt;
 
     const progress = (1 + Math.sin(this.age / this.duration * 2 * Math.PI)) / 2;

@@ -763,10 +763,45 @@ let g_levels = (function() {
            'blue');
     },
 
-    function level9() {
-      const g = GoalNode(398, 299, 30, 'white');
-      g.hintRadius = 30;
+    function beforeLast() {
 
+    },
+
+    function level9() {
+      const g = GoalNode(402, 299, 22, 'white');
+      g.hintRadius = 20;
+
+      Train(RoundWorm(121, 98, 40, 20), 0.8);
+
+      {
+        const s = Switch(680, 110, 18, 'green');
+        const w = ArcWall(400, 300, 135, 145, 18, 0.35, 0.3, 'green');
+        w.motor = new RotationMotor(3.0, point(400, 300), 10000);
+        w.motor.age = -1200;
+        Wiro(s, w.motor);
+
+        ArcWall(400, 300, 125, 165, 8, 0.85, 1.7, 'orange');
+      }
+
+      {
+        const s = Switch(688, 506, 18, 'pink');
+        const w = ArcWall(400, 300, 165, 177, 18, 0.35, 0.3, 'pink');
+        w.motor = new RotationMotor(3.0, point(400, 300), 11000);
+        w.motor.age = 1400;
+        Wiro(s, w.motor);
+
+        ArcWall(400, 300, 150, 200, 8, 0.85, 1.7, 'orange');
+      }
+
+      {
+        const s0 = Switch(118, 494, 18, 'blue');
+        const w0 = ArcWall(400, 300, 200, 215, 18, 0.35, 0.3, 'blue');
+        w0.motor = new RotationMotor(3.0, point(400, 300), 12000);
+        w0.motor.age = 1000;
+        Wiro(s0, w0.motor);
+
+        ArcWall(400, 300, 180, 240, 8, 0.85, 1.7, 'orange');
+      }
 
       Wall([-50, -50,
             1000, -50,
@@ -791,6 +826,11 @@ let g_levels = (function() {
             850, 610,
             780, 610],
            'blue');
+    },
+
+    function endScreen() {
+      // TODO: Title+credits
+      // one or two worms to play with
     },
   ];
 

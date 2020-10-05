@@ -91,10 +91,10 @@ class LoopNode
     ctx.beginPath();
     if (this.drawSquare)
     {
-      ctx.moveTo(...vadd(this.pos, point(0, -10)));
-      ctx.lineTo(...vadd(this.pos, point(10, 0)));
-      ctx.lineTo(...vadd(this.pos, point(0, 10)));
-      ctx.lineTo(...vadd(this.pos, point(-10, 0)));
+      ctx.moveTo(...vadd(this.pos, point(0, -this.radius)));
+      ctx.lineTo(...vadd(this.pos, point(this.radius, 0)));
+      ctx.lineTo(...vadd(this.pos, point(0, this.radius)));
+      ctx.lineTo(...vadd(this.pos, point(-this.radius, 0)));
     }
     else
     {

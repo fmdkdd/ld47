@@ -8,6 +8,7 @@ Florent:
 - [ ] BUG: Train on last segment may not crash and skip ahead
 - [ ] SFX/MUSIC!!!
 - [ ] Cleanup levels/focus on pacing
+- [ ] Touch up index.html
 
 Merwan:
 - [X] End-of-level nodes
@@ -19,10 +20,12 @@ Merwan:
 - [X] Visually distinct exit nodes
 - [ ] Exit nodes animation to win level?
 - [X] "on/off" visual effects for nodes/doors
+- [ ] Worms are powered on segment by segment on level enter
 
 Open:
 - [ ] Add reset button on worm death
 - [ ] Death animation for losing train
+- [ ] last level: rotated lock shouldn't glow until powered on
 
 Polish:
 - [ ] Embelish trains
