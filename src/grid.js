@@ -30,13 +30,13 @@ class Grid
     for (let y = 0; y < g_canvas.height; y += g_options.gridSpacing)
     {
       ctx.moveTo(0, y);
-      ctx.lineTo(g_canvas.width, y);
+      ctx.lineTo(g_canvas.width, y-0.2*y); // skewed
     }
 
     for (let x = 0; x < g_canvas.width; x += g_options.gridSpacing)
     {
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, g_canvas.height);
+      ctx.lineTo(x + 0.1*x, g_canvas.height); // skewed
     }
 
     ctx.stroke();
