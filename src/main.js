@@ -171,8 +171,7 @@ function onMouseUp(event) {
 // TODO remove
 function onMouseWheel(event) {
 
-  setState(StateLevelOver);
-  return;
+  //setState(StateLevelOver);
 
   if (event.deltaY > 0)
     g_currentLevel++;
@@ -250,7 +249,40 @@ window.addEventListener('DOMContentLoaded', function() {
 
   g_ctxt = g_canvas.getContext('2d');
 
+  initAudio();
+
   gameInit();
 
   mainLoop();
 });
+
+let g_audio = {
+  context: null,
+  buffers: {},
+};
+
+function initAudio() {
+  g_audio.context = new AudioContext();
+
+  loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
+}
+
+function loadAudioSample(name, url) {
+  let request = new XMLHttpRequest();
+  request.open("GET", url, true);
+  request.responseType = "arraybuffer";
+  request.onload = function onload() {
+    g_audio.context.decodeAudioData(this.response, function(decodedBuffer) {
+      g_audio.buffers[name] = decodedBuffer;
+      console.log('done');
+    });
+  };
+  request.send();
+}
+
+function playAudio(name) {
+  const source = g_audio.context.createBufferSource();
+  source.connect(g_audio.context.destination);
+  source.buffer = g_audio.buffers[name];
+  source.start(0);
+}

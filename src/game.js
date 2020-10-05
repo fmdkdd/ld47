@@ -771,9 +771,23 @@ function testLevel() {
   setState(StateMain);
 }
 
+let StateIntro = {
+  update(dt) {
+    if (g_mouse.wasPressed(0)) {
+      loadLevel(g_currentLevel);
+      setState(StateMain);
+    }
+  },
+
+  render(ctxt) {
+    ctxt.fillStyle = '#fff';
+    ctxt.font = '48px sans';
+    ctxt.fillText('Click to start', 250, 300);
+  }
+};
+
 function gameInit() {
-  loadLevel(g_currentLevel);
-  setState(StateMain);
+  setState(StateIntro);
 
   //testLevel();
 }
