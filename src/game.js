@@ -869,9 +869,7 @@ function renderTrains(ctxt) {
     ctxt.fillStyle = '#b00';
 
     const pos = getTrainScreenPos(train);
-    ctxt.beginPath();
-    ctxt.arc(pos[0], pos[1], 6, 0, Math.PI*2);
-    ctxt.fill();
+    drawPoint(ctxt, pos, 10, 'red', 'red')
   }
 }
 

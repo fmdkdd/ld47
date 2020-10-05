@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 1;
+let g_currentLevel = 2;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
