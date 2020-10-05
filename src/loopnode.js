@@ -63,7 +63,7 @@ class LoopNode
 
     ctx.save();
 
-    if (g_options.glowEnabled)
+    if (this.enabled && g_options.glowEnabled)
     {
       ctx.fillStyle = color[1];
       //ctx.globalCompositeOperation = 'lighter';
@@ -74,7 +74,7 @@ class LoopNode
       ctx.fill();
     }
 
-    ctx.fillStyle = color[0];
+    ctx.fillStyle = this.enabled || color.length < 3 ? color[0] : color[2];
     ctx.globalCompositeOperation = 'source-over';
     ctx.filter = 'none';
 

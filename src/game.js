@@ -683,13 +683,24 @@ function testLevel() {
 
     const wire = new Wire(node, door);
     g_game.wires.push(wire);
+
+    let x = 50;
+    for (let color in g_colors)
+    {
+      g_game.doors.push(new Door(point(x, 400), 50, 0.001, color));
+      g_game.doors[g_game.doors.length - 1].powered = false;
+      x += 40;
+      g_game.doors.push(new Door(point(x, 400), 50, 0.001, color));
+      x += 50;
+    }
   }
 
   setState(StateMain);
 }
 
 function gameInit() {
-  loadLevel(g_currentLevel);
+  //loadLevel(g_currentLevel);
+  testLevel();
 }
 
 function updateLoopNodes(dt)

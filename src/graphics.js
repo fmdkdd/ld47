@@ -1,16 +1,17 @@
 const g_colors =
 {
-  // [primary color, glow color]
-  blue: ['#cff7ff', '#29dcfd'],
-  pink: ['#ffdeff', '#ff61fe'],
-  orange: ['#ffe4d9', '#ff6121']
+  // [primary color, glow color, disabled color]
+  blue: ['#cff7ff', '#29dcfd', '#3a5d63'],
+  pink: ['#ffdeff', '#ff61fe', '#6E4B6E'],
+  orange: ['#ffe4d9', '#ff6121', '#573d33'],
+  yellow: ['#ffffb5', '#fdfc07', '#6e6e3c']
 };
 
-function drawShape(ctx, points, colorName)
+function drawShape(ctx, points, colorName, on = true)
 {
   const color = g_colors[colorName];
 
-  if (g_options.glowEnabled)
+  if (on && g_options.glowEnabled)
   {
     ctx.fillStyle = color[1];
     //ctx.globalCompositeOperation = 'lighter';
@@ -25,7 +26,7 @@ function drawShape(ctx, points, colorName)
     ctx.fill();
   }
 
-  ctx.fillStyle = color[0];
+  ctx.fillStyle = on || color.length < 3 ? color[0] : color[2];
   ctx.globalCompositeOperation = 'source-over';
   ctx.filter = 'none';
 
@@ -35,6 +36,15 @@ function drawShape(ctx, points, colorName)
     ctx.lineTo(points[i][0], points[i][1]);
   ctx.closePath();
   ctx.fill();
+
+  /*if (!on)
+  {
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = color[1];
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }*/
 }
 
 function drawPath(ctx, points, strokeColor, glowColor)
@@ -87,4 +97,43 @@ function drawPath(ctx, points, strokeColor, glowColor)
 function glow()
 {
   return 0.5 * Math.sin(g_lastFrameTime * g_options.glowSpeed) + 0.5;
+}
+
+class BlinkingAnimation
+{
+  constructor(duration, offMaxDuration, onMaxDuration)
+  {
+    this.duration = duration;
+    this.offMaxDuration = offMaxDuration;
+    this.onMaxDuration = onMaxDuration;
+
+    this.age = 0;
+    this.stepAge = 0;
+
+    this.on = Math.random() > 0.5;
+    this.next();
+  }
+
+  done()
+  {
+    return this.age > this.duration;
+  }
+
+  update(dt)
+  {
+    this.age += dt;
+    this.stepAge += dt;
+
+    if (this.stepAge > this.nextToggle)
+    {
+      this.on = !this.on;
+      this.next();
+    }
+  }
+
+  next()
+  {
+    this.stepAge = 0;
+    this.nextToggle = Math.random() * (this.on ? this.offMaxDuration : this.onMaxDuration);
+  }
 }

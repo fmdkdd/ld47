@@ -16,20 +16,40 @@ class Door
     this.rot = 0;
     this.height = 100;
     this.powered = true;
+    this.previousPowered = this.powered;
     this.anchorPos = vadd(this.pos, vmult(point(0, 1), openDistance * 1.55)); // HACK
+
+    this.blinkingAnimation = null;
   }
 
   update(dt)
   {
     this.currentState.update(dt, this);
+
+    // Start blinking
+    if (this.powered && this.previousPowered !== this.powered)
+    {
+      this.blinkingAnimation = new BlinkingAnimation(1500, 400, 200);
+    }
+
+    if (this.blinkingAnimation)
+    {
+      if (this.blinkingAnimation.done())
+        this.blinkingAnimation = null;
+      else
+        this.blinkingAnimation.update(dt);
+    }
+
+    this.previousPowered = this.powered;
   }
 
   render(ctx)
   {
     const points = this.points();
 
-    drawShape(ctx, points[0], this.color);
-    drawShape(ctx, points[1], this.color);
+    const on = this.blinkingAnimation ? this.blinkingAnimation.on : this.powered;
+    drawShape(ctx, points[0], this.color, on);
+    drawShape(ctx, points[1], this.color, on);
   }
 
   points()
