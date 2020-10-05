@@ -104,7 +104,7 @@ function update(dt) {
 function render(ctxt) {
   ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-  ctxt.fillStyle = '#1A1A1A'
+  ctxt.fillStyle = BACKGROUND_COLOR
   ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
   ctxt.save();
@@ -163,13 +163,18 @@ function onMouseUp(event) {
 
 // TODO remove
 function onMouseWheel(event) {
-  //g_game.animations.push(makeExplosion([200, 200], 10));
+
+setState(StateLevelOver);
+return;
+
   if (event.deltaY > 0)
     g_currentLevel++;
   else
     g_currentLevel--;
+
   g_currentLevel = g_currentLevel % g_levels.length;
   loadLevel(g_currentLevel);
+  setState(StateMain);
 
   event.preventDefault();
   return false;

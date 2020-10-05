@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 11;
+let g_currentLevel = 0;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
@@ -15,7 +15,11 @@ function loadLevel(n) {
 
   g_levels[n]();
 
-  setState(StateMain);
+  // Blinking animation on load
+  g_game.obstacles.forEach(o =>{
+    o.blinkingAnimation = new BlinkingAnimation(1000, 400, 200);
+    o.blinkingAnimation.on = false; // Starts looking powered off
+  });
 }
 
 let g_levels = (function() {

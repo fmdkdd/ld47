@@ -6,6 +6,9 @@ class Obstacles
     this.color = color;
 
     this.motor = null;
+
+    this.on = true;
+    this.blinkingAnimation = null;
   }
 
   update(dt)
@@ -14,11 +17,20 @@ class Obstacles
     {
       this.motor.update(dt);
     }
+
+    if (this.blinkingAnimation)
+    {
+      if (this.blinkingAnimation.done())
+        this.blinkingAnimation = null;
+      else
+        this.blinkingAnimation.update(dt);
+    }
   }
 
   render(ctx)
   {
-    drawShape(ctx, this.getPoints(), this.color);
+    const on = this.blinkingAnimation ? this.blinkingAnimation.on : this.on;
+    drawShape(ctx, this.getPoints(), this.color, on);
   }
 
   hits(worm)

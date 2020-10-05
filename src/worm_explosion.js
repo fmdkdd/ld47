@@ -1,20 +1,51 @@
 class WormExplosion
 {
-  constructor(worm, colorName)
+  constructor(points, colorName)
   {
     this.colorName = colorName;
 
-    // Worm points -> segment list
+    // points -> segment list
 
     this.segments = [];
     this.directions = [];
     this.angularSpeeds = [];
+    this.speeds = [];
 
-    for (let i = 1; i < worm.points.length; ++i)
+    this.maxLength = 50;
+
+    for (let i = 1; i < points.length; ++i)
     {
-      this.segments.push([worm.points[i - 1], worm.points[i]]);
-      this.angularSpeeds.push(2 * Math.random() - 1);
-      this.directions.push(randomDir());
+      const segment = [points[i - 1], points[i]];
+
+      const segments = [];
+
+      const length = vlength(vsub(points[i - 1], points[i]));
+
+      if (length > this.maxLength)
+      {
+        const parts = Math.ceil(length / this.maxLength);
+        const step = vmult(vnorm(vsub(segment[1], segment[0])), this.maxLength);
+
+        for (let p = 0; p < parts; ++p)
+        {
+          segments.push([
+            vadd(segment[0], vmult(step, p)),
+            vadd(segment[0], vmult(step, p + 1))
+          ]);
+        }
+      }
+      else
+      {
+        segments.push(segment);
+      }
+
+      for (let s of segments)
+      {
+        this.segments.push(s);
+        this.angularSpeeds.push(2 * Math.random() - 1);
+        this.speeds.push(20 * Math.random());
+        this.directions.push(randomDir());
+      }
     }
 
     this.age = 0;
@@ -39,7 +70,7 @@ class WormExplosion
       // Move away
 
       const dir = this.directions[i];
-      middle = vadd(middle, vmult(dir, 5 * dt));
+      middle = vadd(middle, vmult(dir, this.speeds[i] * dt));
 
       // Rotate
 

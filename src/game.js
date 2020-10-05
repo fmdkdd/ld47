@@ -244,7 +244,7 @@ let StateDraggingWorm = {
         g_game.worms.splice(w_i, 1);
         --w_i;
 
-        g_game.animations.push(new WormExplosion(worm, 'blue'));
+        g_game.animations.push(new WormExplosion(worm.points, 'blue'));
 
         // BrrRrRRrrr
         g_game.screenshake.amplitude = 2;
@@ -393,20 +393,109 @@ let StateDraggingWorm = {
 // Level finished
 
 let StateLevelOver = {
+
+  explosionDuration: 0,
+  fadeOutDuration: 500,
+  fadeInDuration: 1000,
+  pauseDuration: 600,
+
+  onEnter(state) {
+
+    /*g_game.worms.forEach(e => {
+      g_game.animations.push(new WormExplosion(e.points, 'blue'));
+    });
+
+    g_game.obstacles.forEach(e => {
+      g_game.animations.push(new WormExplosion(e.getPoints(), e.color));
+    });
+
+    g_game.doors.forEach(e => {
+      const points = e.getPoints();
+      g_game.animations.push(new WormExplosion(points[0], e.color))
+      g_game.animations.push(new WormExplosion(points[1], e.color))
+    });
+
+    g_game.loopNodes.forEach(e => {
+      g_game.animations.push(makeExplosion(e.pos, 10));
+    });
+
+    g_game.trains.forEach(e => {
+      g_game.animations.push(makeExplosion(getTrainScreenPos(e), 10));
+    });
+
+    g_game.worms.length = 0;
+    g_game.obstacles.length = 0;
+    g_game.doors.length = 0;
+    g_game.loopNodes.length = 0;
+    g_game.trains.length = 0;*/
+
+    this.age = 0;
+    this.fadeOut = true;
+    this.fadeIn = false;
+    this.levelLoaded = false;
+  },
+
   update(dt) {
-    if (g_mouse.wasPressed(0)) {
-      loadLevel(++g_currentLevel);
+
+    this.age += dt;
+
+    // 3 - End
+    if (this.age > this.explosionDuration + this.fadeOutDuration + this.fadeInDuration + this.pauseDuration)
+    {
+      setState(StateMain);
     }
+
+    // 3 - Final pause
+    if (this.age > this.explosionDuration + this.fadeOutDuration + this.fadeInDuration)
+    {
+      this.fadeIn = false;
+    }
+
+    // 2 - Load level & fade in
+    else if (this.age > this.explosionDuration + this.fadeOutDuration)
+    {
+      this.fadeOut = false;
+      this.fadeIn = true;
+
+      if (!this.levelLoaded)
+      {
+        console.log(g_currentLevel)
+        loadLevel(++g_currentLevel);
+        this.levelLoaded = true;
+      }
+    }
+
+    // 1 - Fade out
+    /*else if (this.age > this.explosionDuration)
+    {
+      this.fadeOut = true;
+    }*/
+
+    g_game.grid.update(dt);
+    updateAnimations(dt);
   },
 
   render(ctxt) {
     StateMain.render(ctxt);
-    ctxt.fillStyle = 'rgba(0,0,0,0.8)';
+
+    if (this.fadeOut || this.fadeIn)
+    {
+      const progress = this.fadeOut ?
+        (this.age - this.explosionDuration) / this.fadeOutDuration :
+        1 - (this.age - (this.explosionDuration + this.fadeOutDuration)) / this.fadeInDuration;
+
+      ctxt.globalAlpha = progress;
+      ctxt.fillStyle = BACKGROUND_COLOR;
+      ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      ctxt.globalAlpha = 1;
+    }
+
+    /*ctxt.fillStyle = 'rgba(0,0,0,0.8)';
     ctxt.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     ctxt.fillStyle = "#fff";
     ctxt.font = '48px sans-serif';
-    ctxt.fillText("Level over", 300, 300);
+    ctxt.fillText("Level over", 300, 300);*/
   },
 };
 
@@ -706,6 +795,8 @@ function testLevel() {
 
 function gameInit() {
   loadLevel(g_currentLevel);
+  setState(StateMain);
+
   //testLevel();
 }
 

@@ -42,28 +42,22 @@ class ParticleSystem
   {
     this.particles.forEach(p =>
     {
-      ctx.globalCompositeOperation = 'lighter';
-      //ctx.filter = 'blur(3px)';
-      ctx.fillStyle = '#ff3bfe';
-      ctx.fillRect(p.pos[0], p.pos[1], 6 * p.scale, 6 * p.scale);
-      //ctx.beginPath();
-      //ctx.arc(p.pos[0], p.pos[1], 6 * p.scale, 0, Math.PI * 2);
-      //ctx.fill();
-//return;
-      ctx.globalCompositeOperation = 'source-over';
-      //ctx.filter = 'none';
-      ctx.fillStyle = '#ffdeff';
-      ctx.fillRect(p.pos[0], p.pos[1], 3 * p.scale, 6 * p.scale);
-      //ctx.beginPath();
-      //ctx.arc(p.pos[0], p.pos[1], 3 * p.scale, 0, Math.PI * 2);
-      //ctx.fill();
+      const color = g_colors[p.color];
+
+      //ctx.globalCompositeOperation = 'lighter';
+      //ctx.fillStyle = '#ff3bfe';
+      //ctx.fillRect(p.pos[0], p.pos[1], 6 * p.scale, 6 * p.scale);
+
+      //ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = color[1];
+      ctx.fillRect(p.pos[0], p.pos[1], 1 * p.scale, 1 * p.scale);
     });
   }
 }
 
 class Particle
 {
-  constructor(pos, vel, {lifetime = 10, drag = 1, fromScale = 1, toScale = 1})
+  constructor(pos, vel, {lifetime = 10, drag = 1, fromScale = 1, toScale = 1, color = 'white'})
   {
     this.pos = pos;
     this.vel = vel;
@@ -71,6 +65,7 @@ class Particle
     this.drag = drag;
     this.fromScale = fromScale;
     this.toScale = toScale;
+    this.color = color;
 
     this.age = 0;
     this.scale = 1;
@@ -90,7 +85,7 @@ function makeExplosion(pos, particleCount)
   {
     particles.push(new Particle(
       pos.slice(),
-      vmult(randomDir(), 20),
+      vmult(randomDir(), 20 + Math.random() * 10),
       {
         lifetime: 5000,
         drag: 0.99,

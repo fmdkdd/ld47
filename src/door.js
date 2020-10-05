@@ -45,14 +45,14 @@ class Door
 
   render(ctx)
   {
-    const points = this.points();
+    const points = this.getPoints();
 
     const on = this.blinkingAnimation ? this.blinkingAnimation.on : this.powered;
     drawShape(ctx, points[0], this.color, on);
     drawShape(ctx, points[1], this.color, on);
   }
 
-  points()
+  getPoints()
   {
     const origin = point(0, 0);
 
@@ -96,7 +96,7 @@ class Door
       return false;
     };
 
-    const doorPoints = this.points();
+    const doorPoints = this.getPoints();
     return check(doorPoints[0]) || check(doorPoints[1]);
   }
 }

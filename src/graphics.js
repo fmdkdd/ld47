@@ -1,3 +1,5 @@
+const BACKGROUND_COLOR = '#1A1A1A';
+
 const g_colors =
 {
   // [primary color, glow color, disabled color]
@@ -19,6 +21,11 @@ function drawShape(ctx, points, colorName, on = true)
   if (on && g_options.glowEnabled)
   {
     ctx.shadowColor = color[1];
+    ctx.shadowBlur = 10;
+  }
+  else
+  {
+    ctx.shadowColor = 'black';
     ctx.shadowBlur = 10;
   }
 
