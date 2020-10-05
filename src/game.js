@@ -696,6 +696,15 @@ function createTrain(wormId) {
 }
 
 function resetGameState() {
+  // HACK: Attempt to fix canvas context by recreating it
+  {
+    g_canvas.width = CANVAS_WIDTH;
+    g_canvas.height= CANVAS_HEIGHT;
+    g_canvas.style.width = (CANVAS_WIDTH * CANVAS_SCALE) + "px";
+    g_canvas.style.height = (CANVAS_HEIGHT * CANVAS_SCALE) + "px";
+    g_ctxt = g_canvas.getContext('2d');
+  }
+
   g_game.objects = {};
   g_game.worms.length = 0;
   g_game.trains.length = 0;
