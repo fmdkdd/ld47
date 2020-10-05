@@ -946,6 +946,7 @@ function checkObstacles() {
       g_game.screenshake.speed = 2;
       g_game.screenshake.playFor(300);
 
+      playAudio('fritz');
       showRetryButton(true);
     }
   }

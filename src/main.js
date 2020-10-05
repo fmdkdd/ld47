@@ -279,6 +279,8 @@ function initAudio() {
   g_audio.context = new AudioContext();
 
   loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
+  loadAudioSample('fritz', 'assets/fritz.ogg');
+  loadAudioSample('bgm', 'assets/bgm.ogg');
 }
 
 function loadAudioSample(name, url) {
@@ -288,15 +290,18 @@ function loadAudioSample(name, url) {
   request.onload = function onload() {
     g_audio.context.decodeAudioData(this.response, function(decodedBuffer) {
       g_audio.buffers[name] = decodedBuffer;
-      console.log('done');
     });
   };
   request.send();
 }
 
-function playAudio(name) {
+function playAudio(name, loop=false) {
   const source = g_audio.context.createBufferSource();
   source.connect(g_audio.context.destination);
+  if (g_audio.buffers[name] == null) {
+    console.warn(`Audio buffer ${name} empty`);
+  }
   source.buffer = g_audio.buffers[name];
+  source.loop = loop;
   source.start(0);
 }
