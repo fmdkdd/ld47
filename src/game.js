@@ -171,19 +171,16 @@ let StateMain = {
     renderTrains(ctxt);
 
     // Draw interaction points
+
+    const strokeColor = g_colors['blue'][0];
+    const glowColor = g_colors['blue'][1];
+
     if (this.grabbingPoint !== null) {
-      ctxt.strokeStyle = 'lime';
-      ctxt.beginPath();
-      ctxt.arc(this.grabbingPoint[0], this.grabbingPoint[1],
-               5, 0, 2*Math.PI);
-      ctxt.stroke();
+      drawPoint(ctxt, this.grabbingPoint, 6, strokeColor, glowColor);
     }
+
     if (this.splittingPoint !== null) {
-      ctxt.strokeStyle = '#fff';
-      ctxt.beginPath();
-      ctxt.arc(this.splittingPoint[0], this.splittingPoint[1],
-               5, 0, 2*Math.PI);
-      ctxt.stroke();
+      drawPoint(ctxt, this.splittingPoint, 6, strokeColor, BACKGROUND_COLOR, false);
     }
   },
 
@@ -339,6 +336,7 @@ let StateDraggingWorm = {
   render(ctxt) {
     StateMain.render(ctxt);
 
+    /*
     // Connect head to mouse cursor
     const head = wormHead(this.worm);
     const pmouse = g_mouse.pos();
@@ -349,13 +347,10 @@ let StateDraggingWorm = {
     ctxt.moveTo(head[0], head[1]);
     ctxt.lineTo(pmouse[0], pmouse[1]);
     ctxt.stroke();
+    */
 
     if (this.connectingPoint != null ) {
-      ctxt.strokeStyle = "orangered";
-      ctxt.beginPath();
-      ctxt.arc(this.connectingPoint[0], this.connectingPoint[1],
-               5, 0, 2*Math.PI);
-      ctxt.stroke();
+      drawPoint(ctxt, this.connectingPoint, 6, g_colors['blue'][0], BACKGROUND_COLOR, false);
     }
 
     if (g_options.showWormLength) {

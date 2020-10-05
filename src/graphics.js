@@ -87,6 +87,33 @@ function drawPath(ctx, points, strokeColor, glowColor)
   ctx.restore();
 }
 
+function drawPoint(ctx, pos, radius, strokeColor, glowColor, fill = true)
+{
+  ctx.save();
+
+  // Glow layer
+
+  ctx.globalCompositeOperation = 'lighter';
+
+  if (g_options.glowEnabled)
+  {
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = 10 * (1 - g_options.glowIntensity + g_options.glowIntensity * glow());
+  }
+
+  // Core layer
+
+  ctx.fillStyle = strokeColor;
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(pos[0], pos[1], radius, 0, 2 * Math.PI);
+  ctx.stroke();
+  if (fill) ctx.fill();
+
+  ctx.restore();
+}
+
 function glow()
 {
   return 0.5 * Math.sin(g_lastFrameTime * g_options.glowSpeed) + 0.5;
