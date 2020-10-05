@@ -814,6 +814,28 @@ function testLevel() {
   setState(StateMain);
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// StateIntro
+
+let StateWaitForAudio = {
+  update(dt) {
+    if (g_audio.samplesWaitingToLoad === 0)
+      setState(StateIntro);
+  },
+
+  render(ctxt) {
+    ctxt.strokeStyle = '#ddd';
+    ctxt.lineWidth = 10;
+    ctxt.save();
+    ctxt.translate(400, 300);
+    ctxt.rotate(0.0025 * g_lastFrameTime);
+    ctxt.beginPath();
+    ctxt.arc(0, 0, 100, 0, 6.1);
+    ctxt.stroke();
+    ctxt.restore();
+  },
+};
+
 let StateIntro = {
   update(dt) {
     if (g_mouse.wasPressed(0)) {
@@ -831,7 +853,7 @@ let StateIntro = {
 };
 
 function gameInit() {
-  setState(StateIntro);
+  setState(StateWaitForAudio);
 
   //testLevel();
 }

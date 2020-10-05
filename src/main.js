@@ -124,8 +124,6 @@ function mainLoop(frameTime) {
   const dt = g_lastFrameTime > 0 ? frameTime - g_lastFrameTime : 5;
   g_lastFrameTime = frameTime;
 
-  g_ctxt.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
   update(dt);
   render(g_ctxt);
   swap_input_states();
@@ -280,12 +278,13 @@ let g_audio = {
   context: null,
   buffers: {},
   volumes: {},
+  samplesWaitingToLoad: 0,
 };
 
 function initAudio() {
   g_audio.context = new AudioContext();
 
-  loadAudioSample('bgm', 'assets/bgm.ogg');
+  loadAudioSample('bgm', 'assets/bgm.ogg', 0.6);
   loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
   loadAudioSample('fritz', 'assets/fritz.ogg', 3);
   loadAudioSample('switch', 'assets/switch.ogg', 0.3);
@@ -301,8 +300,10 @@ function loadAudioSample(name, url, volume=1) {
     g_audio.context.decodeAudioData(this.response, function(decodedBuffer) {
       g_audio.buffers[name] = decodedBuffer;
       g_audio.volumes[name] = volume;
+      g_audio.samplesWaitingToLoad--;
     });
   };
+  g_audio.samplesWiatingToLoad++;
   request.send();
 }
 
@@ -310,6 +311,7 @@ function playAudio(name, loop=false) {
   const source = g_audio.context.createBufferSource();
   if (g_audio.buffers[name] == null) {
     console.warn(`Audio buffer ${name} empty`);
+    return;
   }
   source.buffer = g_audio.buffers[name];
   source.loop = loop;
@@ -317,7 +319,7 @@ function playAudio(name, loop=false) {
   const volume = g_audio.volumes[name];
   if (volume != 1) {
     const gain = g_audio.context.createGain();
-    gain.gain.value = volume;
+    gain.gain.value = volume || 1;
     source.connect(gain);
     gain.connect(g_audio.context.destination);
   } else {
