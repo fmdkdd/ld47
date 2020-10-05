@@ -289,6 +289,8 @@ function initAudio() {
   loadAudioSample('neon-blink', 'assets/neon-blink.ogg');
   loadAudioSample('fritz', 'assets/fritz.ogg', 3);
   loadAudioSample('switch', 'assets/switch.ogg', 0.3);
+  loadAudioSample('grab', 'assets/grab.ogg', 0.3);
+  loadAudioSample('humm', 'assets/humm.ogg', 0.1);
 }
 
 function loadAudioSample(name, url, volume=1) {
@@ -323,4 +325,5 @@ function playAudio(name, loop=false) {
   }
 
   source.start(0);
+  return source;
 }

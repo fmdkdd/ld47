@@ -199,6 +199,18 @@ let StateMain = {
 let StateDraggingWorm = {
   worm: null,
   connectingPoint: null,
+  hummAudio: null,
+
+  onEnter() {
+    playAudio('grab');
+    this.hummAudio = playAudio('humm', true);
+  },
+
+  onExit() {
+    this.connectingPoint = null;
+    this.hummAudio.stop(0);
+    this.hummAudio = null;
+  },
 
   update(dt) {
     let pmouse = g_mouse.pos();
@@ -266,7 +278,7 @@ let StateDraggingWorm = {
             // Crash trains that are on track that is to be deleted
             if (Math.trunc(train.pos) < i - 1)
             {
-              crashTrain(train)
+              crashTrain(train);
               setState(StateGameover);
               return;
             } else
@@ -320,6 +332,8 @@ let StateDraggingWorm = {
 
         // Adjust trains positions after merge
         adjustTrainPositions(this.worm, savedTrainsScreenPos);
+
+        playAudio('grab');
       }
 
       setState(StateMain);
@@ -363,10 +377,6 @@ let StateDraggingWorm = {
       const dynamicLength = wormLength(this.worm);
       ctxt.fillText(`${staticLength}\n${dynamicLength}`, 0, 20);
     }
-  },
-
-  onExit() {
-    this.connectingPoint = null;
   },
 };
 
@@ -519,6 +529,8 @@ function crashTrain(train)
 
   g_game.worms.splice(g_game.worms.indexOf(worm), 1);
   g_game.trains.splice(g_game.trains.indexOf(train), 1);
+
+  playAudio('fritz');
 }
 
 function getTrainScreenPos(train) {
