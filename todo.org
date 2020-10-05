@@ -16,8 +16,9 @@ Merwan:
 - [X] Ditch rendering wire: use same color for linked switch and door
 - [X] BUG: node-surrounding check not robust
 - [ ] More colors!
-- [ ] Visually distinct exit nodes
+- [X] Visually distinct exit nodes
 - [ ] Exit nodes animation to win level?
+- [ ] "on/off" visual effects for nodes/doors
 
 Open:
 - [ ] Add reset button on worm death

@@ -13,6 +13,7 @@ class LoopNode
     this.enabled = false;
     this.anchorPos = this.pos;
     this.age = 0;
+    this.drawSquare = true; // Otherwise circle
   }
 
   update(dt)
@@ -78,7 +79,18 @@ class LoopNode
     ctx.filter = 'none';
 
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
+    if (this.drawSquare)
+    {
+      ctx.moveTo(...vadd(this.pos, point(0, -10)));
+      ctx.lineTo(...vadd(this.pos, point(10, 0)));
+      ctx.lineTo(...vadd(this.pos, point(0, 10)));
+      ctx.lineTo(...vadd(this.pos, point(-10, 0)));
+    }
+    else
+    {
+      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI);
+    }
+
     ctx.fill();
 
     if (this.drawHint)
@@ -149,5 +161,7 @@ class LoopNode
 
 function makeEndLevelNode(pos, radius, color)
 {
-  return new LoopNode(pos, radius, color, true, () => setState(StateLevelOver));
+  const node = new LoopNode(pos, radius, color, true, () => setState(StateLevelOver));
+  node.drawSquare = false;
+  return node;
 }
