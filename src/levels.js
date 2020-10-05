@@ -3,7 +3,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Levels
 
-let g_currentLevel = 4;
+let g_currentLevel = 11;
 
 function loadLevel(n) {
   assert(g_levels[n] != null);
@@ -559,13 +559,82 @@ let g_levels = (function() {
            'blue');
     },
 
-    function level6() {
-      RoundWorm(187, 114, 25, 20);
-      RoundWorm(625, 424, 25, 20);
-      RoundWorm(169, 414, 25, 20);
+    function level5b() {
+      Train(RoundWorm(131, 123, 25, 20), 0.4);
+      Train(RoundWorm(298, 445, 25, 20), 0.4);
 
-      GoalNode(387, 276, 50, 'blue');
+      {
+        const s = Switch(328, 134, 8, 'orange');
+        const d0 = Dooro(549, 448, 15, 0.008, 'orange', -0.02, 150);
+        d0.age = 1400;
+        Wiro(s, [d0]);
+      }
 
+      {
+        const s = Switch(675, 447, 8, 'green');
+        const d = Dooro(415, 143, 15, 0.008, 'green', 0.05, 150);
+        d.age = 1400;
+        Wiro(s, d);
+      }
+
+      {
+        const s = Switch(176, 450, 8, 'pink');
+        const d0 = Dooro(233, 127, 15, 0.008, 'pink', 0.05, 150);
+        const d1 = Dooro(500, 141, 15, 0.008, 'pink', 0.05, 150);
+        d0.age = 1400;
+        d1.age = 1000;
+        Wiro(s, [d0, d1]);
+      }
+
+      const g = GoalNode(650, 140, 10, 'blue');
+      g.hintRadius = 20;
+
+      {
+        let wave = [];
+        for (let i=0; i < 202; ++i) {
+          wave.push(-10 + i * 11, 378 + Math.sin(i * 0.28) * 20);
+        }
+        wave.push(787, 313, 27, 286);
+        Wall(wave, 'orange');
+      }
+
+      {
+        let wave = [];
+        for (let i=0; i < 202; ++i) {
+          wave.push(-10 + i * 11, 508 - Math.sin(i * 0.28) * 20);
+        }
+        wave.push(800, 600, 0, 600);
+        Wall(wave, 'orange');
+      }
+
+      Wall([
+        40, 14,
+        39, 46,
+        255, 84,
+        285, 50,
+        369, 60,
+        398, 111,
+        530, 132,
+        622, 29
+      ], 'orange');
+
+      Wall([
+        528, 150,
+        397, 168,
+        364, 204,
+        293, 212,
+        248, 182,
+        23, 206,
+        23, 300,
+        570, 253
+      ], 'orange');
+
+      Wall([
+        30, 250,
+        769, 235,
+        783, 341,
+        29, 298
+      ], 'pink');
 
       Wall([-50, -50,
             1000, -50,
@@ -592,52 +661,13 @@ let g_levels = (function() {
            'blue');
     },
 
-    function level7() {
-      Train(RoundWorm(187, 114, 25, 20), 0.4);
-      Train(RoundWorm(718, 502, 25, 20), 0.4);
+    function level6() {
+      RoundWorm(180, 124, 25, 20);
+      RoundWorm(180, 274, 25, 20);
+      RoundWorm(180, 424, 25, 20);
 
-      {
-        const s = Switch(518, 358, 8, 'orange');
-        const d = Dooro(195, 306, 40, 0.004, 'orange', 1.5, 180);
-        d.age = 1200;
-        Wiro(s, d);
-      }
-
-      {
-        const s = Switch(199, 433, 8, 'pink');
-        const d = Dooro(585, 273, 15, 0.008, 'pink', 1.66, 200);
-        d.age = 1400;
-        Wiro(s, d);
-      }
-
-      GoalNode(600, 160, 10, 'blue');
-
-      Wall([
-        766, 169,
-        649, 280,
-        627, 371,
-        662, 427,
-        773, 410
-      ], 'blue');
-
-      Wall([
-        788, 468,
-        750, 588,
-        632, 548,
-        635, 467,
-        512, 446,
-        413, 384,
-        426, 489,
-        419, 566,
-        789, 592
-      ], 'pink');
-
-      Wall([
-        309, 19,
-        370, 582,
-        434, 583,
-        407, 19
-      ], 'orange');
+      const g = GoalNode(517, 276, 50, 'blue');
+      g.hintRadius = 25;
 
       Wall([-50, -50,
             1000, -50,
@@ -668,13 +698,15 @@ let g_levels = (function() {
       Train(RoundWorm(121, 98, 30, 20), 0.4);
       Train(RoundWorm(718, 502, 30, 20), 0.4);
 
+      Dooro(326, 29,  800, 0.0008, 'orange', 0.8, 120);
       Dooro(244, 109, 80, 0.0005, 'orange', 0.8, 120);
       Dooro(104, 245, 80, 0.0007, 'orange', 0.8, 120);
 
       Dooro(711, 379, 30, 0.001, 'blue', 1.6, 120);
       Dooro(550, 517, 20, 0.001, 'blue', 0.3, 120);
 
-      GoalNode(389, 283, 30, 'blue');
+      const g = GoalNode(389, 283, 30, 'blue');
+      g.hintRadius = 30;
 
       Wall([-50, -50,
             1000, -50,
@@ -699,7 +731,37 @@ let g_levels = (function() {
             850, 610,
             780, 610],
            'blue');
-    }
+    },
+
+    function level9() {
+      const g = GoalNode(398, 299, 30, 'white');
+      g.hintRadius = 30;
+
+
+      Wall([-50, -50,
+            1000, -50,
+            1000,  50,
+            -50,  20],
+           'pink');
+
+      Wall([-50,  -50,
+            50,  -50,
+            10, 1000,
+            -50, 1000],
+           'blue');
+
+      Wall([-50, 1000,
+            -50,  550,
+            1000,  590,
+            1000,  610],
+           'pink');
+
+      Wall([750, -50,
+            850, -50,
+            850, 610,
+            780, 610],
+           'blue');
+    },
   ];
 
 }());

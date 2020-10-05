@@ -41,3 +41,4 @@ Ideas:
 - Colored trains act as keys for loop nodes
 - Loop nodes can require multiple keys/(same color/different colors)
 - Slowdown effet on gameover (to understand cause of failure)
+- Can move obstacle instead of using doors
