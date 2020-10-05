@@ -206,6 +206,9 @@ function showRetryButton(on)
   g_retryButton.style.opacity = on ? 1 : 0;
 }
 
+let g_logoImage;
+let g_logoImage2;
+
 window.addEventListener('DOMContentLoaded', function() {
 
   g_retryButton = document.querySelector('#retry');
@@ -213,6 +216,9 @@ window.addEventListener('DOMContentLoaded', function() {
       console.log('retry');
       loadLevel(g_currentLevel);
   });
+
+  g_logoImage = document.querySelector('#logo');
+  g_logoImage2 = document.querySelector('#logo2');
 
   g_canvas = document.querySelector('canvas');
 

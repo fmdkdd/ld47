@@ -10,7 +10,8 @@ let g_game = {
   wires: [],
   animations: [],
   grid: null,
-  screenshake: null
+  screenshake: null,
+  images: []
 };
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,6 +122,7 @@ let StateMain = {
 
     updateTrains(dt);
 
+    updateImages(dt);
     updateObstacles(dt);
     updateLoopNodes(dt);
     updateDoors(dt);
@@ -167,6 +169,7 @@ let StateMain = {
     g_game.doors.forEach(door => door.render(ctxt));
     g_game.obstacles.forEach(obs => obs.render(ctxt));
     g_game.animations.forEach(system => system.render(ctxt));
+    g_game.images.forEach(i => i.render(ctxt));
 
     renderTrains(ctxt);
 
@@ -324,6 +327,7 @@ let StateDraggingWorm = {
 
     updateTrains(dt);
 
+    updateImages(dt);
     updateObstacles(dt);
     updateLoopNodes(dt);
     updateDoors(dt);
@@ -817,6 +821,11 @@ function gameInit() {
   setState(StateIntro);
 
   //testLevel();
+}
+
+function updateImages(dt)
+{
+  g_game.images.forEach(i => i.update(dt));
 }
 
 function updateObstacles(dt)

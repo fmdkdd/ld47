@@ -221,3 +221,40 @@ class WaveAnimation
     ctx.restore();
   }
 }
+
+class Img
+{
+  constructor(pos, size,image)
+  {
+    this.pos = pos;
+    this.size = size;
+    this.image = image;
+
+    this.motor = null;
+  }
+
+  update(dt)
+  {
+    if (this.motor)
+    {
+      this.motor.update(dt);
+    }
+  }
+
+  getPos()
+  {
+    if (!this.motor)
+      return this.pos;
+
+    return this.motor.apply([this.pos])[0];
+  }
+
+  render(ctx)
+  {
+    const p = this.getPos();
+
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = 'white'
+    ctx.drawImage(this.image, p[0], p[1], this.size[0], this.size[1]);
+  }
+}

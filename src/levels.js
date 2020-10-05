@@ -93,11 +93,52 @@ let g_levels = (function() {
     return w;
   }
 
+  function Circle(pos, radius, color)
+  {
+    const points = [];
+
+    const pi2 = 2 * Math.PI;
+
+    for (let a = 0; a < pi2; a += 0.1)
+    {
+      points.push(point(
+        pos[0] + Math.sin(a) * radius,
+        pos[1] + Math.cos(a) * radius
+      ));
+    }
+
+    const o = new Obstacles(points, color);
+    g_game.obstacles.push(o);
+    return o;
+  }
+
   return [
     function level0() {
-      StraightWorm(200, 300, 18, 'x');
-      const g = GoalNode(550, 300, 10, 'blue');
+      StraightWorm(200, 450, 18, 'x');
+      const g = GoalNode(550, 450, 10, 'blue');
       g.hintRadius = 22;
+
+      const tri1 = Wall([
+        120, 150,
+        600, 80,
+        400, 300,
+        ], 'green');
+      tri1.motor = new TranslationMotor(point(-5, -3), 4000);
+
+      const tri2 = Wall([
+        150, 100,
+        650, 120,
+        300, 300,
+        ], 'red');
+      tri2.motor = new TranslationMotor(point(5, 5), 6000);
+
+      const circle = Circle(point(550, 220), 70, 'yellow');
+      circle.motor = new TranslationMotor(point(0, 10), 5000);
+
+      //g_game.images.push(new Img(point(150, 120), point(500, 120), g_logoImage));
+      const img2 = new Img(point(475, 150), point(150, 150), g_logoImage2);
+      g_game.images.push(img2);
+      img2.motor = new TranslationMotor(point(0, 10), 5000);
 
       Wall([-50, -50,
             1000, -50,
