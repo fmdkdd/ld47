@@ -23,6 +23,7 @@ Open:
 - [ ] Ditch rendering wire: use same color for linked switch and door
 
 Polish:
+- [ ] Embelish trains
 - [ ] Level transition
 - [ ] To make connection easier, maybe allow connection beyond the
   connectionDistance?
