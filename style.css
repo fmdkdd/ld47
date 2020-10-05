@@ -34,6 +34,28 @@ footer {
   clear: right;
 }
 
+#container {
+  margin: auto;
+  position: relative;
+  width: 800px;
+  height: 600px;
+}
+
+#retry {
+  z-index: 10000;
+  position: absolute;
+  bottom: 50px;
+  right: 50px;
+}
+
 #retry.hidden {
   display: none;
+}
+
+#retry img {
+  width: 200px;
+}
+
+#retry img:hover {
+  transform: scale(1.1);
 }
