@@ -201,7 +201,12 @@ let g_retryButton;
 
 function showRetryButton(on)
 {
-  g_retryButton.style.opacity = on ? 1 : 0;
+  if (!on) {
+    g_retryButton.classList.add('hidden');
+  }
+  else {
+    g_retryButton.classList.remove('hidden');
+  }
 }
 
 let g_logoImage;

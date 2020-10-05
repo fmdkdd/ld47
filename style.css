@@ -33,3 +33,7 @@ footer {
   margin-right: 60px;
   clear: right;
 }
+
+#retry.hidden {
+  display: none;
+}

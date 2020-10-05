@@ -853,6 +853,7 @@ let StateIntro = {
 };
 
 function gameInit() {
+  showRetryButton(false);
   setState(StateWaitForAudio);
 
   //testLevel();
