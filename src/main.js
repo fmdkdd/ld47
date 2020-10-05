@@ -1,5 +1,10 @@
 'use strict';
 
+const DEBUG =
+      ((location.hostname === 'localhost') ||
+       (location.hostname === '127.0.0.1') ||
+       (location.hostname === '0.0.0.0'));
+
 const CANVAS_WIDTH  = 800;
 const CANVAS_HEIGHT = 600;
 const CANVAS_SCALE  = 1;
@@ -113,7 +118,8 @@ function render(ctxt) {
 }
 
 function mainLoop(frameTime) {
-  g_stats.begin();
+  if (DEBUG)
+    g_stats.begin();
 
   const dt = g_lastFrameTime > 0 ? frameTime - g_lastFrameTime : 5;
   g_lastFrameTime = frameTime;
@@ -124,7 +130,8 @@ function mainLoop(frameTime) {
   render(g_ctxt);
   swap_input_states();
 
-  g_stats.end();
+  if (DEBUG)
+    g_stats.end();
 
   requestAnimationFrame(mainLoop);
 }
@@ -164,8 +171,8 @@ function onMouseUp(event) {
 // TODO remove
 function onMouseWheel(event) {
 
-setState(StateLevelOver);
-return;
+  setState(StateLevelOver);
+  return;
 
   if (event.deltaY > 0)
     g_currentLevel++;
@@ -188,40 +195,43 @@ function onContextMenu(event) {
 window.addEventListener('DOMContentLoaded', function() {
   g_canvas = document.querySelector('canvas');
 
-  g_stats = new Stats();
-  g_stats.showPanel(0);
-  document.body.appendChild(g_stats.dom);
+  if (DEBUG) {
+    g_stats = new Stats();
+    g_stats.showPanel(0);
+    document.body.appendChild(g_stats.dom);
 
-  var gui = new dat.GUI();
+    var gui = new dat.GUI();
 
-  const curveOptions = gui.addFolder('Curve sampling');
-  curveOptions.add(g_options, "samplingDistance", 0, 100);
-  curveOptions.add(g_options, "curveTension", 0, 2);
-  curveOptions.add(g_options, "curveSegments", 1, 30);
+    const curveOptions = gui.addFolder('Curve sampling');
+    curveOptions.add(g_options, "samplingDistance", 0, 100);
+    curveOptions.add(g_options, "curveTension", 0, 2);
+    curveOptions.add(g_options, "curveSegments", 1, 30);
 
-  const controlsOptions = gui.addFolder('Controls');
-  controlsOptions.add(g_options, "connectionDistance", 0, 100);
-  controlsOptions.add(g_options, "grabDistance", 0, 100);
-  controlsOptions.add(g_options, "splitDistance", 0, 100);
-  controlsOptions.add(g_options, "trainSpeed", 0.1, 1).onChange((v) => {
-    for (let train of g_game.trains)
-      train.speed = v;
-  });
+    const controlsOptions = gui.addFolder('Controls');
+    controlsOptions.add(g_options, "connectionDistance", 0, 100);
+    controlsOptions.add(g_options, "grabDistance", 0, 100);
+    controlsOptions.add(g_options, "splitDistance", 0, 100);
+    controlsOptions.add(g_options, "trainSpeed", 0.1, 1).onChange((v) => {
+      for (let train of g_game.trains)
+        train.speed = v;
+    });
 
-  const debugOptions = gui.addFolder('Debug');
-  debugOptions.add(g_options, "showWormPoints");
-  debugOptions.add(g_options, "showWormLength");
+    const debugOptions = gui.addFolder('Debug');
+    debugOptions.add(g_options, "showWormPoints");
+    debugOptions.add(g_options, "showWormLength");
 
-  const renderOptions = gui.addFolder('Rendering');
-  renderOptions.add(g_options, "glowEnabled");
-  renderOptions.add(g_options, "glowSpeed", 0, 0.01);
-  renderOptions.add(g_options, "glowIntensity", 0, 1);
-  renderOptions.add(g_options, "gridSpacing", 0, 300);
+    const renderOptions = gui.addFolder('Rendering');
+    renderOptions.add(g_options, "glowEnabled");
+    renderOptions.add(g_options, "glowSpeed", 0, 0.01);
+    renderOptions.add(g_options, "glowIntensity", 0, 1);
+    renderOptions.add(g_options, "gridSpacing", 0, 300);
+
+    g_canvas.addEventListener('mousewheel',  onMouseWheel);
+  }
 
   g_canvas.addEventListener('mousemove',   onMouseMove);
   g_canvas.addEventListener('mousedown',   onMouseDown);
   g_canvas.addEventListener('mouseup',     onMouseUp);
-  g_canvas.addEventListener('mousewheel',  onMouseWheel);
   g_canvas.addEventListener('contextmenu', onContextMenu);
 
   g_canvas.width = CANVAS_WIDTH;
