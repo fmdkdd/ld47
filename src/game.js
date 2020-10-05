@@ -263,7 +263,7 @@ let StateDraggingWorm = {
             // Crash trains that are on track that is to be deleted
             if (Math.trunc(train.pos) < i - 1)
             {
-              train.hasCrashed = true;
+              crashTrain(train)
               setState(StateGameover);
               return;
             } else
@@ -490,7 +490,7 @@ let StateGameover = {
       gameInit();
     }*/
 
-    //StateMain.update(dt); ???
+    StateMain.update(dt);
   },
 
   render(ctxt) {
@@ -503,6 +503,13 @@ let StateGameover = {
     ctxt.fillText("Click to retry", 300, 300);*/
   },
 };
+
+function crashTrain(train)
+{
+  train.hasCrashed = true;
+
+  g_game.animations.push(makeTrainExplosion(getTrainScreenPos(train), 10));
+}
 
 function getTrainScreenPos(train) {
   const worm = getObject(train.wormId);
@@ -855,7 +862,7 @@ function updateTrains(dt) {
       }
       assert(currentPointIndex < path.length);
       if (!isWormClosed(worm) && nextPointIndex >= path.length) {
-        train.hasCrashed = true;
+        crashTrain(train);
         setState(StateGameover);
         continue outer;
       }
@@ -876,7 +883,7 @@ function updateTrains(dt) {
         train.pos -= max_pos;
       }
       else {
-        train.hasCrashed = true;
+        crashTrain(train)
         setState(StateGameover);
       }
     }

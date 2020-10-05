@@ -97,3 +97,25 @@ function makeExplosion(pos, particleCount)
 
   return new ParticleSystem(particles);
 }
+
+function makeTrainExplosion(pos, particleCount)
+{
+  const particles = [];
+
+  for (let i = 0; i < particleCount; ++i)
+  {
+    particles.push(new Particle(
+      pos.slice(),
+      vmult(randomDir(), 20 + Math.random() * 10),
+      {
+        lifetime: 3000,
+        drag: 0.99,
+        fromScale: 10,
+        toScale: 2,
+        color: 'red'
+      }
+    ));
+  }
+
+  return new ParticleSystem(particles);
+}
