@@ -3,28 +3,33 @@ Florent:
 - [X] Make train move with uniform speed regardless of sampling
 - [X] Gameover when train overflows tracks
 - [X] Color worm by danger
-- [ ] BUG: Train on last segment may not crash and skip ahead
 - [X] Check worm length when moving
+- [X] unclosed RoundWorms instead of StraightWorms?
+- [ ] BUG: Train on last segment may not crash and skip ahead
 - [ ] SFX/MUSIC!!!
-- [ ] unclosed RoundWorms instead of StraightWorms?
+- [ ] Cleanup levels/focus on pacing
 
 Merwan:
 - [X] End-of-level nodes
 - [X] Collisions lead to game over
+- [X] Orbit around loop nodes to nudge player
+- [ ] More colors!
+- [ ] Visually distinct exit nodes
+- [ ] Exit nodes animation to win level?
 
 Open:
-- [ ] Speedup/slowdown areas
 - [ ] Add reset button on worm death
+- [ ] Death animation for losing train
 - [ ] Ditch rendering wire: use same color for linked switch and door
 
 Polish:
 - [ ] Level transition
-- [ ] Slowdown effet on gameover (to understand cause of failure)
 - [ ] To make connection easier, maybe allow connection beyond the
   connectionDistance?
 - [ ] Small gap when rendering closed worms
 
 Ideas:
+- Speedup/slowdown areas
 - Score by speed to finish level?
 - Less punitive: lives/reduce size of train instead of gameover
 - Sliding doors that shorten the worm length
@@ -32,4 +37,4 @@ Ideas:
 - Tiles that emit new trains?
 - Colored trains act as keys for loop nodes
 - Loop nodes can require multiple keys/(same color/different colors)
-- Orbit around loop nodes to nudge player
+- Slowdown effet on gameover (to understand cause of failure)

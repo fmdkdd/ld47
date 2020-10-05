@@ -392,6 +392,39 @@ let g_levels = (function() {
     },
 
     function level6() {
+      RoundWorm(187, 114, 25, 20);
+      RoundWorm(625, 424, 25, 20);
+      RoundWorm(169, 414, 25, 20);
+
+      GoalNode(387, 276, 50, 'blue');
+
+
+      Wall([-50, -50,
+            1000, -50,
+            1000,  50,
+            -50,  20],
+           'pink');
+
+      Wall([-50,  -50,
+            50,  -50,
+            10, 1000,
+            -50, 1000],
+           'blue');
+
+      Wall([-50, 1000,
+            -50,  550,
+            1000,  590,
+            1000,  610],
+           'pink');
+
+      Wall([750, -50,
+            850, -50,
+            850, 610,
+            780, 610],
+           'blue');
+    },
+
+    function level7() {
       Train(RoundWorm(187, 114, 25, 20));
       Train(RoundWorm(718, 502, 25, 20));
 
