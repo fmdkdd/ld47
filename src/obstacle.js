@@ -23,7 +23,7 @@ class Obstacles
 
   hits(worm)
   {
-    const transformedPoints = getPoints();
+    const transformedPoints = this.getPoints();
 
     for (let i = 1; i < worm.points.length; ++i)
     {
